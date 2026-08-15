@@ -1,0 +1,33 @@
+.footer {
+  background-color: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding-block: var(--space-4);
+}
+
+.footer-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+  text-align: center;
+}
+
+.footer-brand {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+}
+
+.footer-brand strong {
+  color: var(--color-primary);
+}
+
+.footer-note {
+  max-width: 56ch;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.footer-credit {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
