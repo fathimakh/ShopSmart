@@ -3,8 +3,17 @@ import { FiSliders } from 'react-icons/fi'
 import { useCatalog } from '../context/CatalogContext'
 import FilterPanel from '../components/FilterPanel/FilterPanel'
 import ProductGrid from '../components/ProductGrid/ProductGrid'
+import SearchBar from '../components/SearchBar/SearchBar'
 import EmptyState from '../components/EmptyState/EmptyState'
-import { applyFilters, countActiveFilters, defaultFilters } from '../utils/filters'
+import useDebounce from '../hooks/useDebounce'
+import {
+  applyFilters,
+  countActiveFilters,
+  defaultFilters,
+  searchProducts,
+  sortOptions,
+  sortProducts
+} from '../utils/filters'
 import { pluralize } from '../utils/format'
 import './Home.css'
 
@@ -12,11 +21,17 @@ function Home() {
   const { products, status, usingOfflineData, categories, brands } = useCatalog()
   const [filters, setFilters] = useState(defaultFilters)
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [query, setQuery] = useState('')
+  const [sortBy, setSortBy] = useState('featured')
+  const debouncedQuery = useDebounce(query)
 
   const isLoading = status === 'loading'
   const activeFilterCount = countActiveFilters(filters)
 
-  const visibleProducts = useMemo(() => applyFilters(products, filters), [products, filters])
+  const visibleProducts = useMemo(() => {
+    const matches = searchProducts(applyFilters(products, filters), debouncedQuery)
+    return sortProducts(matches, sortBy)
+  }, [products, filters, debouncedQuery, sortBy])
 
   return (
     <div className="container home">
@@ -34,6 +49,20 @@ function Home() {
           Live catalogue is unavailable right now, so a saved offline copy is being shown.
         </p>
       ) : null}
+
+      <div className="home-toolbar">
+        <SearchBar value={query} onChange={setQuery} />
+        <label className="home-sort">
+          <span className="visually-hidden">Sort products by</span>
+          <select value={sortBy} onChange={(event) => setSortBy(event.target.value)}>
+            {sortOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
 
       <div className="home-layout">
         <button
@@ -64,21 +93,24 @@ function Home() {
 
         <section className="home-results" aria-labelledby="results-heading">
           <div className="section-heading">
-            <h2 id="results-heading">All products</h2>
+            <h2 id="results-heading">{debouncedQuery ? `Results for "${debouncedQuery}"` : 'All products'}</h2>
             {!isLoading ? <p>{pluralize(visibleProducts.length, 'product')} found</p> : null}
           </div>
 
           {!isLoading && !visibleProducts.length ? (
             <EmptyState
-              title="No products match these filters"
-              message="Try widening the price range or removing a category to see more results."
+              title="No products match your search"
+              message="Try a different search term, widen the price range or remove a category."
               action={
                 <button
                   type="button"
                   className="btn btn-primary"
-                  onClick={() => setFilters(defaultFilters)}
+                  onClick={() => {
+                    setFilters(defaultFilters)
+                    setQuery('')
+                  }}
                 >
-                  Clear all filters
+                  Clear search and filters
                 </button>
               }
             />

@@ -48,3 +48,48 @@ export function countActiveFilters(filters) {
 export function toggleValue(list, value) {
   return list.includes(value) ? list.filter((item) => item !== value) : [...list, value]
 }
+
+export const sortOptions = [
+  { value: 'featured', label: 'Featured' },
+  { value: 'price-asc', label: 'Price: low to high' },
+  { value: 'price-desc', label: 'Price: high to low' },
+  { value: 'rating', label: 'Highest rated' },
+  { value: 'popularity', label: 'Most popular' },
+  { value: 'newest', label: 'Newest arrivals' },
+  { value: 'discount', label: 'Biggest discount' }
+]
+
+export function searchProducts(products, query) {
+  const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean)
+  if (!terms.length) return products
+
+  return products.filter((product) => {
+    const haystack = [product.title, product.brand, product.categoryLabel, product.description]
+      .concat(product.tags)
+      .join(' ')
+      .toLowerCase()
+    return terms.every((term) => haystack.includes(term))
+  })
+}
+
+export function sortProducts(products, sortBy) {
+  const sorted = [...products]
+
+  switch (sortBy) {
+    case 'price-asc':
+      return sorted.sort((a, b) => a.price - b.price)
+    case 'price-desc':
+      return sorted.sort((a, b) => b.price - a.price)
+    case 'rating':
+      return sorted.sort((a, b) => b.rating - a.rating)
+    case 'popularity':
+      // The catalogue has no sales figure, so review volume weighted by rating stands in for it.
+      return sorted.sort((a, b) => b.reviewCount * b.rating - a.reviewCount * a.rating)
+    case 'newest':
+      return sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    case 'discount':
+      return sorted.sort((a, b) => b.discount - a.discount)
+    default:
+      return sorted
+  }
+}
