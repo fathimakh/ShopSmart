@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 import Header from './components/Header/Header'
 import Footer from './components/Footer/Footer'
 import Home from './pages/Home'
+import ProductDetails from './pages/ProductDetails'
 import NotFound from './pages/NotFound'
 import './App.css'
 
@@ -15,6 +16,7 @@ function App() {
       <main id="main-content" className="app-main">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
