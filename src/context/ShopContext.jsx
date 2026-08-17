@@ -6,11 +6,14 @@ const ShopContext = createContext(null)
 
 const CART_KEY = 'shopsmart:cart'
 const WISHLIST_KEY = 'shopsmart:wishlist'
+const COMPARE_KEY = 'shopsmart:compare'
+const COMPARE_LIMIT = 4
 
 export function ShopProvider({ children }) {
   const { products } = useCatalog()
   const [cart, setCart] = useLocalStorage(CART_KEY, [])
   const [wishlist, setWishlist] = useLocalStorage(WISHLIST_KEY, [])
+  const [compare, setCompare] = useLocalStorage(COMPARE_KEY, [])
 
   const addToCart = useCallback(
     (productId, quantity = 1) => {
@@ -57,6 +60,21 @@ export function ShopProvider({ children }) {
 
   const clearWishlist = useCallback(() => setWishlist([]), [setWishlist])
 
+  const toggleCompare = useCallback(
+    (productId) => {
+      setCompare((current) => {
+        if (current.includes(productId)) {
+          return current.filter((id) => id !== productId)
+        }
+        // Four columns is the most that stays readable on a laptop screen.
+        return current.length >= COMPARE_LIMIT ? current : [...current, productId]
+      })
+    },
+    [setCompare]
+  )
+
+  const clearCompare = useCallback(() => setCompare([]), [setCompare])
+
   const value = useMemo(() => {
     const cartItems = cart
       .map((item) => {
@@ -70,6 +88,10 @@ export function ShopProvider({ children }) {
       (total, item) => total + (item.originalPrice - item.price) * item.quantity,
       0
     )
+
+    const compareItems = compare
+      .map((id) => products.find((product) => product.id === id))
+      .filter(Boolean)
 
     const wishlistItems = wishlist
       .map((id) => products.find((product) => product.id === id))
@@ -91,18 +113,29 @@ export function ShopProvider({ children }) {
       wishlistCount: wishlist.length,
       isWishlisted: (productId) => wishlist.includes(productId),
       toggleWishlist,
-      clearWishlist
+      clearWishlist,
+      compare,
+      compareItems,
+      compareCount: compare.length,
+      compareLimit: COMPARE_LIMIT,
+      isCompared: (productId) => compare.includes(productId),
+      isCompareFull: compare.length >= COMPARE_LIMIT,
+      toggleCompare,
+      clearCompare
     }
   }, [
     cart,
     wishlist,
+    compare,
     products,
     addToCart,
     updateQuantity,
     removeFromCart,
     clearCart,
     toggleWishlist,
-    clearWishlist
+    clearWishlist,
+    toggleCompare,
+    clearCompare
   ])
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>

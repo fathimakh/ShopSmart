@@ -6,7 +6,7 @@ import './Header.css'
 
 const navLinks = [
   { to: '/', label: 'Shop', icon: null, end: true, countKey: null },
-  { to: '/compare', label: 'Compare', icon: FiColumns, countKey: null },
+  { to: '/compare', label: 'Compare', icon: FiColumns, countKey: 'compareCount' },
   { to: '/wishlist', label: 'Wishlist', icon: FiHeart, countKey: 'wishlistCount' },
   { to: '/cart', label: 'Cart', icon: FiShoppingCart, countKey: 'cartCount' }
 ]

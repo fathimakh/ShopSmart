@@ -119,3 +119,29 @@
   color: var(--color-muted);
   text-decoration: line-through;
 }
+
+.product-card-compare {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  cursor: pointer;
+}
+
+.product-card-compare input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--color-primary);
+}
+
+.product-card-compare.is-active {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.product-card-compare:has(input:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

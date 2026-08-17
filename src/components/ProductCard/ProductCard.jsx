@@ -6,9 +6,11 @@ import { formatPrice } from '../../utils/format'
 import './ProductCard.css'
 
 function ProductCard({ product }) {
-  const { addToCart, isInCart, isWishlisted, toggleWishlist } = useShop()
+  const { addToCart, isInCart, isWishlisted, toggleWishlist, isCompared, isCompareFull, toggleCompare } =
+    useShop()
   const inCart = isInCart(product.id)
   const wishlisted = isWishlisted(product.id)
+  const compared = isCompared(product.id)
 
   return (
     <article className="product-card card">
@@ -55,6 +57,16 @@ function ProductCard({ product }) {
             {inCart ? 'In cart' : 'Add to cart'}
             <span className="visually-hidden"> - {product.title}</span>
           </button>
+
+          <label className={compared ? 'product-card-compare is-active' : 'product-card-compare'}>
+            <input
+              type="checkbox"
+              checked={compared}
+              disabled={!compared && isCompareFull}
+              onChange={() => toggleCompare(product.id)}
+            />
+            <span>Compare</span>
+          </label>
         </div>
       </div>
     </article>
