@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { FiChevronRight, FiPackage, FiTruck } from 'react-icons/fi'
+import { FiChevronRight, FiPackage, FiShoppingCart, FiTruck } from 'react-icons/fi'
 import { useCatalog } from '../context/CatalogContext'
+import { useShop } from '../context/ShopContext'
 import StarRating from '../components/StarRating/StarRating'
+import QuantityStepper from '../components/QuantityStepper/QuantityStepper'
 import EmptyState from '../components/EmptyState/EmptyState'
 import { formatDate, formatPrice, pluralize } from '../utils/format'
 import './ProductDetails.css'
@@ -10,7 +12,9 @@ import './ProductDetails.css'
 function ProductDetails() {
   const { id } = useParams()
   const { products, status } = useCatalog()
+  const { addToCart } = useShop()
   const [activeImage, setActiveImage] = useState(0)
+  const [quantity, setQuantity] = useState(1)
 
   const product = useMemo(
     () => products.find((item) => String(item.id) === id),
@@ -19,6 +23,7 @@ function ProductDetails() {
 
   useEffect(() => {
     setActiveImage(0)
+    setQuantity(1)
     window.scrollTo({ top: 0 })
   }, [id])
 
@@ -105,6 +110,18 @@ function ProductDetails() {
           </div>
 
           <p className="product-summary-description">{product.description}</p>
+
+          <div className="product-actions">
+            <QuantityStepper value={quantity} max={product.stock} onChange={setQuantity} />
+            <button
+              type="button"
+              className="btn btn-primary product-actions-cart"
+              onClick={() => addToCart(product.id, quantity)}
+            >
+              <FiShoppingCart aria-hidden="true" />
+              Add to cart
+            </button>
+          </div>
 
           <ul className="product-summary-meta">
             <li>

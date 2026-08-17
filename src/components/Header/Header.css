@@ -74,6 +74,19 @@
   color: var(--color-primary);
 }
 
+.header-count {
+  display: grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding-inline: 6px;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-primary);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
 .header-link.is-active {
   background-color: var(--color-primary-soft);
   color: var(--color-primary);

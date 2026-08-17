@@ -62,6 +62,15 @@
 .product-card-footer {
   margin-top: auto;
   padding-top: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.product-card-cart {
+  width: 100%;
+  font-size: 0.85rem;
+  padding-block: 9px;
 }
 
 .product-card-price {

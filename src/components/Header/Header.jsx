@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { FiColumns, FiHeart, FiMenu, FiShoppingCart, FiX } from 'react-icons/fi'
+import { useShop } from '../../context/ShopContext'
 import './Header.css'
 
 const navLinks = [
-  { to: '/', label: 'Shop', icon: null, end: true },
-  { to: '/compare', label: 'Compare', icon: FiColumns },
-  { to: '/wishlist', label: 'Wishlist', icon: FiHeart },
-  { to: '/cart', label: 'Cart', icon: FiShoppingCart }
+  { to: '/', label: 'Shop', icon: null, end: true, countKey: null },
+  { to: '/compare', label: 'Compare', icon: FiColumns, countKey: null },
+  { to: '/wishlist', label: 'Wishlist', icon: FiHeart, countKey: null },
+  { to: '/cart', label: 'Cart', icon: FiShoppingCart, countKey: 'cartCount' }
 ]
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const location = useLocation()
+  const counts = useShop()
 
   useEffect(() => {
     setMenuOpen(false)
@@ -47,20 +49,30 @@ function Header() {
           aria-label="Primary"
         >
           <ul>
-            {navLinks.map(({ to, label, icon: Icon, end }) => (
-              <li key={to}>
-                <NavLink
-                  to={to}
-                  end={end}
-                  className={({ isActive }) =>
-                    isActive ? 'header-link is-active' : 'header-link'
-                  }
-                >
-                  {Icon ? <Icon aria-hidden="true" /> : null}
-                  {label}
-                </NavLink>
-              </li>
-            ))}
+            {navLinks.map(({ to, label, icon: Icon, end, countKey }) => {
+              const count = countKey ? counts[countKey] : 0
+
+              return (
+                <li key={to}>
+                  <NavLink
+                    to={to}
+                    end={end}
+                    className={({ isActive }) =>
+                      isActive ? 'header-link is-active' : 'header-link'
+                    }
+                  >
+                    {Icon ? <Icon aria-hidden="true" /> : null}
+                    {label}
+                    {count > 0 ? (
+                      <span className="header-count">
+                        {count}
+                        <span className="visually-hidden"> items</span>
+                      </span>
+                    ) : null}
+                  </NavLink>
+                </li>
+              )
+            })}
           </ul>
         </nav>
       </div>

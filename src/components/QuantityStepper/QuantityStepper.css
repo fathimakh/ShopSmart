@@ -1,0 +1,35 @@
+.quantity-stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  overflow: hidden;
+}
+
+.quantity-stepper button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 38px;
+  border: 0;
+  background-color: transparent;
+  color: var(--color-muted);
+}
+
+.quantity-stepper button:hover:not(:disabled) {
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.quantity-stepper button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.quantity-stepper span {
+  min-width: 34px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
