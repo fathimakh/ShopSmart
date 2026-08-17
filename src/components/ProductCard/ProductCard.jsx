@@ -1,13 +1,14 @@
 import { Link } from 'react-router-dom'
-import { FiCheck, FiShoppingCart } from 'react-icons/fi'
+import { FiCheck, FiHeart, FiShoppingCart } from 'react-icons/fi'
 import StarRating from '../StarRating/StarRating'
 import { useShop } from '../../context/ShopContext'
 import { formatPrice } from '../../utils/format'
 import './ProductCard.css'
 
 function ProductCard({ product }) {
-  const { addToCart, isInCart } = useShop()
+  const { addToCart, isInCart, isWishlisted, toggleWishlist } = useShop()
   const inCart = isInCart(product.id)
+  const wishlisted = isWishlisted(product.id)
 
   return (
     <article className="product-card card">
@@ -17,6 +18,18 @@ function ProductCard({ product }) {
           <span className="badge badge-accent product-card-discount">{product.discount}% off</span>
         ) : null}
       </Link>
+
+      <button
+        type="button"
+        className={wishlisted ? 'product-card-wish is-active' : 'product-card-wish'}
+        aria-pressed={wishlisted}
+        onClick={() => toggleWishlist(product.id)}
+      >
+        <FiHeart aria-hidden="true" />
+        <span className="visually-hidden">
+          {wishlisted ? 'Remove from wishlist' : 'Save to wishlist'} - {product.title}
+        </span>
+      </button>
 
       <div className="product-card-body">
         <p className="product-card-brand">{product.brand}</p>

@@ -5,10 +5,12 @@ import { useCatalog } from './CatalogContext'
 const ShopContext = createContext(null)
 
 const CART_KEY = 'shopsmart:cart'
+const WISHLIST_KEY = 'shopsmart:wishlist'
 
 export function ShopProvider({ children }) {
   const { products } = useCatalog()
   const [cart, setCart] = useLocalStorage(CART_KEY, [])
+  const [wishlist, setWishlist] = useLocalStorage(WISHLIST_KEY, [])
 
   const addToCart = useCallback(
     (productId, quantity = 1) => {
@@ -42,6 +44,19 @@ export function ShopProvider({ children }) {
 
   const clearCart = useCallback(() => setCart([]), [setCart])
 
+  const toggleWishlist = useCallback(
+    (productId) => {
+      setWishlist((current) =>
+        current.includes(productId)
+          ? current.filter((id) => id !== productId)
+          : [...current, productId]
+      )
+    },
+    [setWishlist]
+  )
+
+  const clearWishlist = useCallback(() => setWishlist([]), [setWishlist])
+
   const value = useMemo(() => {
     const cartItems = cart
       .map((item) => {
@@ -56,6 +71,10 @@ export function ShopProvider({ children }) {
       0
     )
 
+    const wishlistItems = wishlist
+      .map((id) => products.find((product) => product.id === id))
+      .filter(Boolean)
+
     return {
       cart,
       cartItems,
@@ -66,9 +85,25 @@ export function ShopProvider({ children }) {
       addToCart,
       updateQuantity,
       removeFromCart,
-      clearCart
+      clearCart,
+      wishlist,
+      wishlistItems,
+      wishlistCount: wishlist.length,
+      isWishlisted: (productId) => wishlist.includes(productId),
+      toggleWishlist,
+      clearWishlist
     }
-  }, [cart, products, addToCart, updateQuantity, removeFromCart, clearCart])
+  }, [
+    cart,
+    wishlist,
+    products,
+    addToCart,
+    updateQuantity,
+    removeFromCart,
+    clearCart,
+    toggleWishlist,
+    clearWishlist
+  ])
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>
 }

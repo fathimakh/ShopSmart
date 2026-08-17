@@ -136,6 +136,15 @@
   min-width: 170px;
 }
 
+.product-actions-wish.is-active {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.product-actions-wish.is-active svg {
+  fill: var(--color-danger);
+}
+
 .product-summary-meta {
   display: flex;
   flex-direction: column;

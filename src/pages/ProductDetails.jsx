@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { FiChevronRight, FiPackage, FiShoppingCart, FiTruck } from 'react-icons/fi'
+import { FiChevronRight, FiHeart, FiPackage, FiShoppingCart, FiTruck } from 'react-icons/fi'
 import { useCatalog } from '../context/CatalogContext'
 import { useShop } from '../context/ShopContext'
 import StarRating from '../components/StarRating/StarRating'
@@ -12,7 +12,7 @@ import './ProductDetails.css'
 function ProductDetails() {
   const { id } = useParams()
   const { products, status } = useCatalog()
-  const { addToCart } = useShop()
+  const { addToCart, isWishlisted, toggleWishlist } = useShop()
   const [activeImage, setActiveImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
 
@@ -120,6 +120,19 @@ function ProductDetails() {
             >
               <FiShoppingCart aria-hidden="true" />
               Add to cart
+            </button>
+            <button
+              type="button"
+              className={
+                isWishlisted(product.id)
+                  ? 'btn btn-outline product-actions-wish is-active'
+                  : 'btn btn-outline product-actions-wish'
+              }
+              aria-pressed={isWishlisted(product.id)}
+              onClick={() => toggleWishlist(product.id)}
+            >
+              <FiHeart aria-hidden="true" />
+              {isWishlisted(product.id) ? 'Saved' : 'Save'}
             </button>
           </div>
 
