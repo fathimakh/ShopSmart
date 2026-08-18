@@ -1,0 +1,138 @@
+.ai-search {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.ai-search-head {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.ai-search-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: 1.15rem;
+}
+
+.ai-search-head h2 {
+  font-size: 1.15rem;
+}
+
+.ai-search-head p {
+  font-size: 0.88rem;
+  color: var(--color-muted);
+  max-width: 68ch;
+}
+
+.ai-search-form {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.ai-search-form input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 12px var(--space-3);
+  font-size: 0.95rem;
+}
+
+.ai-search-form input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.ai-search-examples {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.ai-search-examples ul {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.ai-search-examples button {
+  border: 1px dashed var(--color-border);
+  background-color: transparent;
+  border-radius: var(--radius-pill);
+  padding: 5px 12px;
+  font-size: 0.82rem;
+  color: var(--color-muted);
+  transition: border-color 0.18s ease, color 0.18s ease;
+}
+
+.ai-search-examples button:hover {
+  border-color: var(--color-primary);
+  border-style: solid;
+  color: var(--color-primary);
+}
+
+.ai-search-result {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background-color: var(--color-primary-soft);
+}
+
+.ai-search-result-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-primary);
+}
+
+.ai-search-chips {
+  display: flex;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}
+
+.ai-search-chips .badge {
+  background-color: var(--color-surface);
+}
+
+.ai-search-count {
+  font-size: 0.82rem;
+  color: var(--color-muted);
+}
+
+.ai-search-clear {
+  margin-left: auto;
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.82rem;
+}
+
+@media (max-width: 600px) {
+  .ai-search {
+    padding: var(--space-3);
+  }
+
+  .ai-search-form {
+    flex-direction: column;
+  }
+}

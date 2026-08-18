@@ -3,7 +3,8 @@ export const defaultFilters = {
   brands: [],
   minPrice: '',
   maxPrice: '',
-  minRating: 0
+  minRating: 0,
+  minDiscount: 0
 }
 
 export const priceBands = [
@@ -34,6 +35,7 @@ export function applyFilters(products, filters) {
     if (min !== null && product.price < min) return false
     if (max !== null && product.price > max) return false
     if (filters.minRating && product.rating < filters.minRating) return false
+    if (filters.minDiscount && product.discount < filters.minDiscount) return false
     return true
   })
 }
@@ -42,6 +44,7 @@ export function countActiveFilters(filters) {
   let count = filters.categories.length + filters.brands.length
   if (filters.minPrice !== '' || filters.maxPrice !== '') count += 1
   if (filters.minRating) count += 1
+  if (filters.minDiscount) count += 1
   return count
 }
 
@@ -50,6 +53,7 @@ export function toggleValue(list, value) {
 }
 
 export const sortOptions = [
+  { value: 'relevance', label: 'Best match' },
   { value: 'featured', label: 'Featured' },
   { value: 'price-asc', label: 'Price: low to high' },
   { value: 'price-desc', label: 'Price: high to low' },

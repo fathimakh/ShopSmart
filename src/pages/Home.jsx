@@ -4,8 +4,11 @@ import { useCatalog } from '../context/CatalogContext'
 import FilterPanel from '../components/FilterPanel/FilterPanel'
 import ProductGrid from '../components/ProductGrid/ProductGrid'
 import SearchBar from '../components/SearchBar/SearchBar'
+import AiSearchPanel from '../components/AiSearchPanel/AiSearchPanel'
 import EmptyState from '../components/EmptyState/EmptyState'
 import useDebounce from '../hooks/useDebounce'
+import { buildTextIndex } from '../utils/textIndex'
+import { parseQuery, rankByRelevance } from '../utils/nlpSearch'
 import {
   applyFilters,
   countActiveFilters,
@@ -23,15 +26,37 @@ function Home() {
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [sortBy, setSortBy] = useState('featured')
+  const [aiSearch, setAiSearch] = useState(null)
   const debouncedQuery = useDebounce(query)
 
   const isLoading = status === 'loading'
   const activeFilterCount = countActiveFilters(filters)
 
+  // Building the index once per catalogue keeps every later search cheap.
+  const textIndex = useMemo(() => buildTextIndex(products), [products])
+
   const visibleProducts = useMemo(() => {
-    const matches = searchProducts(applyFilters(products, filters), debouncedQuery)
-    return sortProducts(matches, sortBy)
-  }, [products, filters, debouncedQuery, sortBy])
+    const filtered = applyFilters(products, filters)
+    const matches = aiSearch
+      ? rankByRelevance(filtered, textIndex, aiSearch.keywords)
+      : searchProducts(filtered, debouncedQuery)
+
+    return sortBy === 'relevance' ? matches : sortProducts(matches, sortBy)
+  }, [products, filters, debouncedQuery, sortBy, aiSearch, textIndex])
+
+  const runAiSearch = (naturalQuery) => {
+    const parsed = parseQuery(naturalQuery, { categories, brands })
+    setAiSearch(parsed)
+    setFilters({ ...defaultFilters, ...parsed.filters })
+    setSortBy(parsed.sortBy || 'relevance')
+    setQuery('')
+  }
+
+  const clearAiSearch = () => {
+    setAiSearch(null)
+    setFilters(defaultFilters)
+    setSortBy('featured')
+  }
 
   return (
     <div className="container home">
@@ -49,6 +74,13 @@ function Home() {
           Live catalogue is unavailable right now, so a saved offline copy is being shown.
         </p>
       ) : null}
+
+      <AiSearchPanel
+        onSearch={runAiSearch}
+        onClear={clearAiSearch}
+        chips={aiSearch ? aiSearch.chips : []}
+        resultCount={visibleProducts.length}
+      />
 
       <div className="home-toolbar">
         <SearchBar value={query} onChange={setQuery} />
@@ -87,13 +119,15 @@ function Home() {
             brands={brands}
             filters={filters}
             onChange={setFilters}
-            onReset={() => setFilters(defaultFilters)}
+            onReset={clearAiSearch}
           />
         </aside>
 
         <section className="home-results" aria-labelledby="results-heading">
           <div className="section-heading">
-            <h2 id="results-heading">{debouncedQuery ? `Results for "${debouncedQuery}"` : 'All products'}</h2>
+            <h2 id="results-heading">
+              {aiSearch ? 'Best matches' : debouncedQuery ? `Results for "${debouncedQuery}"` : 'All products'}
+            </h2>
             {!isLoading ? <p>{pluralize(visibleProducts.length, 'product')} found</p> : null}
           </div>
 
@@ -106,7 +140,7 @@ function Home() {
                   type="button"
                   className="btn btn-primary"
                   onClick={() => {
-                    setFilters(defaultFilters)
+                    clearAiSearch()
                     setQuery('')
                   }}
                 >
