@@ -6,6 +6,7 @@ import { useShop } from '../context/ShopContext'
 import StarRating from '../components/StarRating/StarRating'
 import QuantityStepper from '../components/QuantityStepper/QuantityStepper'
 import RecommendationRow from '../components/RecommendationRow/RecommendationRow'
+import PricePrediction from '../components/PricePrediction/PricePrediction'
 import EmptyState from '../components/EmptyState/EmptyState'
 import { buildTextIndex } from '../utils/textIndex'
 import { getSimilarProducts } from '../utils/recommend'
@@ -151,6 +152,8 @@ function ProductDetails() {
               {isWishlisted(product.id) ? 'Saved' : 'Save'}
             </button>
           </div>
+
+          <PricePrediction product={product} />
 
           <ul className="product-summary-meta">
             <li>

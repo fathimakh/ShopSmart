@@ -1,0 +1,92 @@
+.price-prediction {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.price-prediction-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.price-prediction-head h2 {
+  font-size: 1rem;
+}
+
+.price-prediction-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  border-radius: var(--radius-pill);
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.is-drop .price-prediction-badge {
+  background-color: #e8f6ed;
+  color: var(--color-success);
+}
+
+.is-rise .price-prediction-badge {
+  background-color: #fdeaea;
+  color: var(--color-danger);
+}
+
+.is-steady .price-prediction-badge {
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.price-prediction-chart {
+  width: 100%;
+  height: 90px;
+}
+
+.price-prediction-line,
+.price-prediction-forecast {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.is-drop .price-prediction-line,
+.is-drop .price-prediction-forecast,
+.is-drop .price-prediction-dot {
+  stroke: var(--color-success);
+  fill: none;
+}
+
+.is-rise .price-prediction-line,
+.is-rise .price-prediction-forecast,
+.is-rise .price-prediction-dot {
+  stroke: var(--color-danger);
+}
+
+.is-steady .price-prediction-line,
+.is-steady .price-prediction-forecast,
+.is-steady .price-prediction-dot {
+  stroke: var(--color-primary);
+}
+
+.price-prediction-forecast {
+  stroke-dasharray: 5 4;
+}
+
+.price-prediction-dot {
+  fill: var(--color-surface);
+  stroke-width: 2;
+}
+
+.price-prediction-summary {
+  font-size: 0.88rem;
+}
+
+.price-prediction-advice {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
