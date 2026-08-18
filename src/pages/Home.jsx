@@ -1,14 +1,17 @@
 import { useMemo, useState } from 'react'
 import { FiSliders } from 'react-icons/fi'
 import { useCatalog } from '../context/CatalogContext'
+import { useShop } from '../context/ShopContext'
 import FilterPanel from '../components/FilterPanel/FilterPanel'
 import ProductGrid from '../components/ProductGrid/ProductGrid'
 import SearchBar from '../components/SearchBar/SearchBar'
 import AiSearchPanel from '../components/AiSearchPanel/AiSearchPanel'
+import RecommendationRow from '../components/RecommendationRow/RecommendationRow'
 import EmptyState from '../components/EmptyState/EmptyState'
 import useDebounce from '../hooks/useDebounce'
 import { buildTextIndex } from '../utils/textIndex'
 import { parseQuery, rankByRelevance } from '../utils/nlpSearch'
+import { getRecommendations } from '../utils/recommend'
 import {
   applyFilters,
   countActiveFilters,
@@ -22,6 +25,7 @@ import './Home.css'
 
 function Home() {
   const { products, status, usingOfflineData, categories, brands } = useCatalog()
+  const { recentlyViewed, wishlist, cart } = useShop()
   const [filters, setFilters] = useState(defaultFilters)
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [query, setQuery] = useState('')
@@ -43,6 +47,16 @@ function Home() {
 
     return sortBy === 'relevance' ? matches : sortProducts(matches, sortBy)
   }, [products, filters, debouncedQuery, sortBy, aiSearch, textIndex])
+
+  const recommendations = useMemo(
+    () =>
+      getRecommendations(products, textIndex, {
+        viewed: recentlyViewed,
+        wishlist,
+        cart: cart.map((item) => item.id)
+      }),
+    [products, textIndex, recentlyViewed, wishlist, cart]
+  )
 
   const runAiSearch = (naturalQuery) => {
     const parsed = parseQuery(naturalQuery, { categories, brands })
@@ -80,6 +94,12 @@ function Home() {
         onClear={clearAiSearch}
         chips={aiSearch ? aiSearch.chips : []}
         resultCount={visibleProducts.length}
+      />
+
+      <RecommendationRow
+        title="Recommended for you"
+        subtitle="Based on the products you viewed, saved and added to your cart"
+        products={recommendations}
       />
 
       <div className="home-toolbar">

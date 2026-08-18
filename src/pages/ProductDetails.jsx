@@ -5,14 +5,17 @@ import { useCatalog } from '../context/CatalogContext'
 import { useShop } from '../context/ShopContext'
 import StarRating from '../components/StarRating/StarRating'
 import QuantityStepper from '../components/QuantityStepper/QuantityStepper'
+import RecommendationRow from '../components/RecommendationRow/RecommendationRow'
 import EmptyState from '../components/EmptyState/EmptyState'
+import { buildTextIndex } from '../utils/textIndex'
+import { getSimilarProducts } from '../utils/recommend'
 import { formatDate, formatPrice, pluralize } from '../utils/format'
 import './ProductDetails.css'
 
 function ProductDetails() {
   const { id } = useParams()
   const { products, status } = useCatalog()
-  const { addToCart, isWishlisted, toggleWishlist } = useShop()
+  const { addToCart, isWishlisted, toggleWishlist, recordView } = useShop()
   const [activeImage, setActiveImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
 
@@ -21,11 +24,24 @@ function ProductDetails() {
     [products, id]
   )
 
+  const textIndex = useMemo(() => buildTextIndex(products), [products])
+
+  const similarProducts = useMemo(
+    () => (product ? getSimilarProducts(product, products, textIndex) : []),
+    [product, products, textIndex]
+  )
+
   useEffect(() => {
     setActiveImage(0)
     setQuantity(1)
     window.scrollTo({ top: 0 })
   }, [id])
+
+  useEffect(() => {
+    if (product) {
+      recordView(product.id)
+    }
+  }, [product, recordView])
 
   if (status === 'loading') {
     return (
@@ -184,6 +200,12 @@ function ProductDetails() {
           <p className="product-reviews-empty">This product has no reviews yet.</p>
         )}
       </section>
+
+      <RecommendationRow
+        title="Similar products"
+        subtitle="Matched on category, brand, description and price"
+        products={similarProducts}
+      />
     </div>
   )
 }

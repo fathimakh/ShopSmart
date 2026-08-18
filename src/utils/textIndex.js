@@ -109,3 +109,41 @@ export function cosineSimilarity(index, idA, idB) {
 
   return dot / (index.norms.get(idA) * index.norms.get(idB))
 }
+
+/**
+ * Merges the vectors of the products a shopper interacted with into a single taste
+ * profile. Weights let a cart item count for more than a product that was only viewed.
+ */
+export function buildProfileVector(index, seeds) {
+  const profile = new Map()
+
+  seeds.forEach(({ id, weight }) => {
+    const vector = index.vectors.get(id)
+    if (!vector) return
+    const norm = index.norms.get(id)
+    vector.forEach((value, term) => {
+      profile.set(term, (profile.get(term) || 0) + (value / norm) * weight)
+    })
+  })
+
+  let squaredSum = 0
+  profile.forEach((value) => {
+    squaredSum += value * value
+  })
+
+  return { vector: profile, norm: Math.sqrt(squaredSum) || 1 }
+}
+
+export function scoreAgainstProfile(index, productId, profile) {
+  const vector = index.vectors.get(productId)
+  if (!vector || !profile.vector.size) return 0
+
+  let dot = 0
+  profile.vector.forEach((weight, term) => {
+    if (vector.has(term)) {
+      dot += weight * vector.get(term)
+    }
+  })
+
+  return dot / (profile.norm * index.norms.get(productId))
+}

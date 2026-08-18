@@ -1,0 +1,24 @@
+.recommendation-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.recommendation-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(210px, 1fr);
+  gap: var(--space-3);
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+  scroll-snap-type: x proximity;
+}
+
+.recommendation-track > li {
+  scroll-snap-align: start;
+}
+
+@media (max-width: 600px) {
+  .recommendation-track {
+    grid-auto-columns: minmax(170px, 1fr);
+  }
+}

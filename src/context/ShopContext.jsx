@@ -7,6 +7,8 @@ const ShopContext = createContext(null)
 const CART_KEY = 'shopsmart:cart'
 const WISHLIST_KEY = 'shopsmart:wishlist'
 const COMPARE_KEY = 'shopsmart:compare'
+const VIEWED_KEY = 'shopsmart:viewed'
+const VIEWED_LIMIT = 8
 const COMPARE_LIMIT = 4
 
 export function ShopProvider({ children }) {
@@ -14,6 +16,7 @@ export function ShopProvider({ children }) {
   const [cart, setCart] = useLocalStorage(CART_KEY, [])
   const [wishlist, setWishlist] = useLocalStorage(WISHLIST_KEY, [])
   const [compare, setCompare] = useLocalStorage(COMPARE_KEY, [])
+  const [recentlyViewed, setRecentlyViewed] = useLocalStorage(VIEWED_KEY, [])
 
   const addToCart = useCallback(
     (productId, quantity = 1) => {
@@ -75,6 +78,16 @@ export function ShopProvider({ children }) {
 
   const clearCompare = useCallback(() => setCompare([]), [setCompare])
 
+  const recordView = useCallback(
+    (productId) => {
+      setRecentlyViewed((current) => {
+        if (current[0] === productId) return current
+        return [productId, ...current.filter((id) => id !== productId)].slice(0, VIEWED_LIMIT)
+      })
+    },
+    [setRecentlyViewed]
+  )
+
   const value = useMemo(() => {
     const cartItems = cart
       .map((item) => {
@@ -121,12 +134,15 @@ export function ShopProvider({ children }) {
       isCompared: (productId) => compare.includes(productId),
       isCompareFull: compare.length >= COMPARE_LIMIT,
       toggleCompare,
-      clearCompare
+      clearCompare,
+      recentlyViewed,
+      recordView
     }
   }, [
     cart,
     wishlist,
     compare,
+    recentlyViewed,
     products,
     addToCart,
     updateQuantity,
@@ -135,7 +151,8 @@ export function ShopProvider({ children }) {
     toggleWishlist,
     clearWishlist,
     toggleCompare,
-    clearCompare
+    clearCompare,
+    recordView
   ])
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>
