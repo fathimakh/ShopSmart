@@ -28,7 +28,8 @@ that survive a page refresh.
 - **Shopping cart** - quantity controls, discount savings, free delivery threshold, saved to local storage
 - **Wishlist** - save products for later and move the whole list to the cart in one click
 - **Responsive design** - tested at 375px, 768px and 1920px
-- **AI: natural language search** - describe what you want in a sentence and the Gemini API works out the filters, with an on-device parser as backup
+- **AI: shopping assistant page** - a dedicated chat where you describe what you need, see the products inline, and keep refining across turns
+- **AI: natural language search** - the Gemini API works out the filters from a sentence, with an on-device parser as backup
 - **AI: recommendation engine** - "Recommended for you" and "Similar products" built from what you view, save and buy
 - **AI: price drop prediction** - a fitted price trend that estimates the price two weeks out
 
@@ -57,10 +58,27 @@ for the best.
 Three AI features power the app. Two of them run entirely in the browser; the third calls
 the Gemini API when a key is available. Each one is described below with the idea behind it.
 
-### 1. Natural language search
+### 1. Shopping assistant and natural language search
 
 Type a request the way you would say it out loud and the filters are worked out for you.
-Two engines sit behind the search box.
+Asking from the shop page opens the **assistant page** (`/assistant`), a chat where each
+answer carries the reply, the filters it used as chips, the matching products as real
+cards you can add to the cart from, and a button to open the full result set back in the
+shop with those filters applied.
+
+Answers build on each other. The previous request and its filters are sent with the next
+message, so a follow-up refines instead of starting over:
+
+> **you** gift for my wife who loves perfume, up to 150
+> **assistant** I'm looking for perfumes for your wife, with a maximum price of $150.
+> *In Fragrances · Under $150* - 5 matches
+>
+> **you** show cheaper options
+> **assistant** I'm looking for cheaper perfume options for your wife.
+> *In Fragrances · Under $150*, now sorted by price
+
+The conversation is kept in local storage, so leaving the page and coming back does not
+lose it. Two engines sit behind the box.
 
 **Gemini (`src/services/gemini.js`).** The request goes to `gemini-2.5-flash` along with
 the exact category slugs and brand names in the catalogue. A response schema forces the
@@ -77,7 +95,8 @@ is what handles a request with no product words in it at all:
 | `best rated laptop for college, budget around 900` | Laptops, max price 900, sorted by rating |
 
 **On-device parser (`src/utils/nlpSearch.js`).** If no API key is configured, the request
-fails or the model returns nothing usable, the same sentence is parsed locally instead.
+fails or the model returns nothing usable, the same sentence is parsed locally instead,
+and `mergeWithPrevious` carries the earlier filters over so follow-ups still work.
 It recognises price phrases (`under`, `over`, `between`, `around`, `1k`), rating phrases,
 discount wording, sort intent, gender hints and around 90 everyday product words:
 
@@ -201,8 +220,10 @@ src/
 ├── hooks/
 │   ├── useDebounce.js
 │   ├── useLocalStorage.js
-│   └── usePageTitle.js
+│   ├── usePageTitle.js
+│   └── useShoppingAssistant.js   the conversation, its memory and its answers
 ├── pages/
+│   ├── Assistant.jsx
 │   ├── Cart.jsx
 │   ├── Compare.jsx
 │   ├── Home.jsx
@@ -239,6 +260,10 @@ Tested and working on:
 | --- |
 | ![Shop page](docs/screenshots/home.png) |
 
+| Shopping assistant answering a vague request |
+| --- |
+| ![Shopping assistant](docs/screenshots/assistant.png) |
+
 | Natural language search answered by Gemini |
 | --- |
 | ![AI search](docs/screenshots/ai-search.png) |
@@ -264,6 +289,9 @@ Tested and working on:
   this app needs.
 - **Offline fallback.** If the catalogue request fails, a saved snapshot of the products
   is used and a notice is shown, so the deployed site never renders an empty page.
+- **Chat as a page, not a widget.** A floating chat bubble would have squeezed product
+  cards into a corner. A full page lets an answer show six real product cards with working
+  cart and compare controls, and hand the whole result set back to the shop.
 - **Explainable AI.** The parsed query is displayed as chips, the panel says which engine
   read the sentence, and the forecast shows its confidence, because a suggestion the user
   cannot understand is a suggestion they will not trust.
@@ -279,6 +307,9 @@ Tested and working on:
 - Checkout is a UI only button, as the project is front-end only.
 - Very broad natural language queries such as "something nice for my sister" have no
   filters to extract and fall back to keyword relevance alone.
+- The assistant answers from the catalogue it has. Asking for something the shop does not
+  stock, such as a screen protector, returns the closest category it can rather than
+  admitting there is no exact match.
 - Any API key used by a front-end application is visible in the built JavaScript, which
   is a property of the stack rather than of this project. The Gemini key is kept out of
   the repository in `.env.local`, and a key used for a public deployment should be
@@ -286,7 +317,7 @@ Tested and working on:
 
 ## 🔮 Future Enhancements
 
-- A MERN back end with real user accounts, so the cart and wishlist follow the user across devices
+- A MERN back end with real user accounts, so the cart, wishlist and conversation follow the user across devices
 - Real price history stored per product, which would replace the reconstructed series with actual data
 - Collaborative filtering once there is more than one user's behaviour to learn from
 - Voice search using the Web Speech API

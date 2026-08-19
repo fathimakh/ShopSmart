@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { FiSliders } from 'react-icons/fi'
 import { useCatalog } from '../context/CatalogContext'
 import { useShop } from '../context/ShopContext'
@@ -10,8 +11,7 @@ import RecommendationRow from '../components/RecommendationRow/RecommendationRow
 import EmptyState from '../components/EmptyState/EmptyState'
 import useDebounce from '../hooks/useDebounce'
 import { buildTextIndex } from '../utils/textIndex'
-import { parseQuery, rankByRelevance } from '../utils/nlpSearch'
-import { isGeminiEnabled, parseQueryWithGemini } from '../services/gemini'
+import { rankByRelevance } from '../utils/nlpSearch'
 import { getRecommendations } from '../utils/recommend'
 import {
   applyFilters,
@@ -32,7 +32,8 @@ function Home() {
   const [query, setQuery] = useState('')
   const [sortBy, setSortBy] = useState('featured')
   const [aiSearch, setAiSearch] = useState(null)
-  const [aiThinking, setAiThinking] = useState(false)
+  const location = useLocation()
+  const navigate = useNavigate()
   const debouncedQuery = useDebounce(query)
 
   const isLoading = status === 'loading'
@@ -60,32 +61,21 @@ function Home() {
     [products, textIndex, recentlyViewed, wishlist, cart]
   )
 
-  // Gemini reads the sentence when a key is configured; the on-device parser covers
-  // the rest of the time, so search never depends on the network being available.
-  const runAiSearch = async (naturalQuery) => {
-    setAiThinking(true)
+  // The assistant page does the reading. Its answer arrives here through router state
+  // when the shopper asks to see the results in the full shop.
+  useEffect(() => {
+    const handoff = location.state?.aiSearch
+    if (!handoff) return
 
-    let parsed = null
-    if (isGeminiEnabled()) {
-      try {
-        const answer = await parseQueryWithGemini(naturalQuery, { categories, brands })
-        if (countActiveFilters(answer.filters) || answer.keywords.length) {
-          parsed = answer
-        }
-      } catch (error) {
-        parsed = null
-      }
-    }
-
-    if (!parsed) {
-      parsed = parseQuery(naturalQuery, { categories, brands })
-    }
-
-    setAiSearch(parsed)
-    setFilters({ ...defaultFilters, ...parsed.filters })
-    setSortBy(parsed.sortBy || 'relevance')
+    setAiSearch(handoff)
+    setFilters({ ...defaultFilters, ...handoff.filters })
+    setSortBy(handoff.sortBy || 'relevance')
     setQuery('')
-    setAiThinking(false)
+    navigate('/', { replace: true, state: null })
+  }, [location.state, navigate])
+
+  const askAssistant = (naturalQuery) => {
+    navigate('/assistant', { state: { query: naturalQuery } })
   }
 
   const clearAiSearch = () => {
@@ -112,12 +102,11 @@ function Home() {
       ) : null}
 
       <AiSearchPanel
-        onSearch={runAiSearch}
+        onSearch={askAssistant}
         onClear={clearAiSearch}
         chips={aiSearch ? aiSearch.chips : []}
         summary={aiSearch ? aiSearch.summary : ''}
         source={aiSearch ? aiSearch.source : null}
-        isThinking={aiThinking}
         resultCount={visibleProducts.length}
       />
 

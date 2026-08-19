@@ -248,3 +248,28 @@ export function rankByRelevance(products, index, keywords) {
 
   return pool.sort((a, b) => b.score - a.score).map((entry) => entry.product)
 }
+
+/**
+ * Applies a follow-up on top of the previous request. Anything the shopper did not
+ * mention again is carried over, which is what makes "cheaper ones" behave sensibly.
+ */
+export function mergeWithPrevious(parsed, previousFilters) {
+  if (!previousFilters) return parsed
+
+  const merged = { ...parsed.filters }
+
+  if (!merged.categories.length) merged.categories = previousFilters.categories
+  if (!merged.brands.length) merged.brands = previousFilters.brands
+  if (merged.minPrice === '' && merged.maxPrice === '') {
+    merged.minPrice = previousFilters.minPrice
+    merged.maxPrice = previousFilters.maxPrice
+  }
+  if (!merged.minRating) merged.minRating = previousFilters.minRating
+  if (!merged.minDiscount) merged.minDiscount = previousFilters.minDiscount
+
+  return {
+    ...parsed,
+    filters: merged,
+    chips: describeFilters(merged, parsed.keywords)
+  }
+}

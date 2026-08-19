@@ -11,6 +11,7 @@ const ProductDetails = lazy(() => import('./pages/ProductDetails'))
 const Cart = lazy(() => import('./pages/Cart'))
 const Wishlist = lazy(() => import('./pages/Wishlist'))
 const Compare = lazy(() => import('./pages/Compare'))
+const Assistant = lazy(() => import('./pages/Assistant'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/compare" element={<Compare />} />
+            <Route path="/assistant" element={<Assistant />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

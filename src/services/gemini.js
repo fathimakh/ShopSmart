@@ -7,12 +7,15 @@ const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODE
 const REQUEST_TIMEOUT = 9000
 
 const SYSTEM_PROMPT = [
-  "You convert an online shopper's request into catalogue filters.",
+  "You are a shop assistant who converts a shopper's request into catalogue filters.",
   'Only use category slugs and brand names from the lists you are given.',
   'Leave a field null when the shopper did not imply it.',
   'Keywords are the descriptive words worth matching against product text: lowercase,',
   'and without the brand or category words you already mapped.',
-  'Summary is one short sentence addressed to the shopper describing what you looked for.'
+  'When an earlier request is included, the new message is usually a refinement of it:',
+  'keep the earlier filters that the shopper has not contradicted, and change only what',
+  'the new message asks for.',
+  'Summary is one friendly sentence addressed to the shopper describing what you looked for.'
 ].join(' ')
 
 const RESPONSE_SCHEMA = {
@@ -72,7 +75,10 @@ function toFilters(answer, categories, brands) {
   }
 }
 
-export async function parseQueryWithGemini(query, { categories = [], brands = [] } = {}) {
+export async function parseQueryWithGemini(
+  query,
+  { categories = [], brands = [], previous = null } = {}
+) {
   if (!API_KEY) {
     throw new Error('Gemini API key is not configured')
   }
@@ -83,9 +89,16 @@ export async function parseQueryWithGemini(query, { categories = [], brands = []
   const prompt = [
     `Categories: ${categories.join(', ')}`,
     `Brands: ${brands.join(', ')}`,
-    '',
-    `Shopper request: ${query}`
-  ].join('\n')
+    ''
+  ]
+
+  if (previous) {
+    prompt.push(`Earlier request: ${previous.query}`)
+    prompt.push(`Filters used for it: ${JSON.stringify(previous.filters)}`)
+    prompt.push('')
+  }
+
+  prompt.push(`Shopper message: ${query}`)
 
   try {
     const response = await fetch(`${ENDPOINT}?key=${API_KEY}`, {
@@ -94,7 +107,7 @@ export async function parseQueryWithGemini(query, { categories = [], brands = []
       signal: controller.signal,
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-        contents: [{ parts: [{ text: prompt }] }],
+        contents: [{ parts: [{ text: prompt.join('\n') }] }],
         generationConfig: {
           temperature: 0.1,
           responseMimeType: 'application/json',
