@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { Link } from 'react-router-dom'
 import { FiCheck, FiHeart, FiShoppingCart } from 'react-icons/fi'
 import StarRating from '../StarRating/StarRating'
@@ -73,4 +74,4 @@ function ProductCard({ product }) {
   )
 }
 
-export default ProductCard
+export default memo(ProductCard)

@@ -17,7 +17,7 @@ export function CatalogProvider({ children }) {
       setStatus('ready')
     } catch (error) {
       // Keep the store usable when the API is unreachable rather than showing a dead page.
-      setProducts(getFallbackProducts())
+      setProducts(await getFallbackProducts())
       setUsingOfflineData(true)
       setStatus('ready')
     }

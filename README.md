@@ -256,6 +256,9 @@ Tested and working on:
   `--space-7`, which keeps rhythm consistent without eyeballing values.
 - **Plain CSS per component.** Each component owns its stylesheet next to its JSX, so
   styles stay easy to trace and nothing leaks between components.
+- **Code split by route.** Only the shop page ships in the first bundle. The other pages
+  and the 65KB offline catalogue snapshot are fetched when they are actually needed, which
+  keeps the initial download about a third smaller.
 - **Two contexts instead of a state library.** `CatalogContext` owns server data,
   `ShopContext` owns the shopper's own data. Redux would have been more machinery than
   this app needs.

@@ -1,4 +1,3 @@
-import fallbackProducts from './fallbackProducts'
 import { titleCase } from '../utils/format'
 
 const API_URL = 'https://dummyjson.com/products?limit=0'
@@ -63,6 +62,9 @@ export async function fetchProducts() {
   }
 }
 
-export function getFallbackProducts() {
+// Imported only when the request fails, so the offline snapshot stays out of the
+// bundle every visitor downloads.
+export async function getFallbackProducts() {
+  const { default: fallbackProducts } = await import('./fallbackProducts')
   return fallbackProducts.map(normalizeProduct)
 }
