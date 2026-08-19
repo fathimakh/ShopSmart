@@ -26,6 +26,7 @@ that survive a page refresh.
 - **Product details** - image gallery, full specifications, customer reviews, stock and shipping information
 - **Comparison tool** - line up to four products side by side with the lowest price and best rated options flagged
 - **Shopping cart** - quantity controls, discount savings, free delivery threshold, saved to local storage
+- **Demonstration checkout** - a three step delivery, payment and review flow with live validation, ending in an order confirmation with an order number and delivery date
 - **Wishlist** - save products for later and move the whole list to the cart in one click
 - **Responsive design** - tested at 375px, 768px and 1920px
 - **AI: shopping assistant page** - a dedicated chat where you describe what you need, see the products inline, and keep refining across turns
@@ -196,6 +197,23 @@ The catalogue API is public and needs no key.
 
 To create a production build, run `npm run build` and preview it with `npm run preview`.
 
+## 🧾 About the checkout
+
+The checkout is a working front-end flow, not a real shop. It walks through delivery
+details, a payment method and a review screen, validates every field as a real form
+would, then confirms the order with an order number, an estimated delivery date and a
+summary of what was bought, and empties the cart.
+
+Because it is a demonstration:
+
+- nothing is ever sent to a server, and there is no server to send it to
+- a banner at the top of the page says so, and the card field warns against entering a
+  real card number
+- only the last four digits of the card are kept, and only in this browser's local
+  storage, so the confirmation can say "card ending 4242"
+- cash on delivery and UPI are offered too, so the flow can be demonstrated without
+  typing card details at all
+
 ## 📁 Project Structure
 
 ```
@@ -205,6 +223,7 @@ src/
 │   ├── CompareBar/
 │   ├── EmptyState/
 │   ├── FilterPanel/
+│   ├── FormField/
 │   ├── Footer/
 │   ├── Header/
 │   ├── PricePrediction/
@@ -225,6 +244,7 @@ src/
 ├── pages/
 │   ├── Assistant.jsx
 │   ├── Cart.jsx
+│   ├── Checkout.jsx
 │   ├── Compare.jsx
 │   ├── Home.jsx
 │   ├── NotFound.jsx
@@ -235,6 +255,7 @@ src/
 │   ├── fallbackProducts.js   offline snapshot of the catalogue
 │   └── gemini.js             Gemini query understanding with validation
 ├── utils/
+│   ├── checkoutValidation.js form validation and card formatting
 │   ├── filters.js            filtering, searching and sorting
 │   ├── format.js             price, date and text formatting
 │   ├── nlpSearch.js          natural language query parsing
@@ -267,6 +288,10 @@ Tested and working on:
 | Natural language search answered by Gemini |
 | --- |
 | ![AI search](docs/screenshots/ai-search.png) |
+
+| Checkout | Order confirmation |
+| --- | --- |
+| ![Checkout](docs/screenshots/checkout.png) | ![Order confirmed](docs/screenshots/order-confirmed.png) |
 
 | Product details with price outlook | Mobile layout |
 | --- | --- |
@@ -304,7 +329,8 @@ Tested and working on:
 - The price history behind the forecast is reconstructed from the discount data the API
   provides, since no real historical prices are available. The regression is real; the
   input series is derived.
-- Checkout is a UI only button, as the project is front-end only.
+- Checkout is a demonstration. Orders are confirmed in the browser and never reach a
+  payment provider, which is the expected scope for a front-end only project.
 - Very broad natural language queries such as "something nice for my sister" have no
   filters to extract and fall back to keyword relevance alone.
 - The assistant answers from the catalogue it has. Asking for something the shop does not

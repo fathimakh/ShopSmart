@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FiShoppingCart, FiTrash2 } from 'react-icons/fi'
 import { useShop } from '../context/ShopContext'
 import QuantityStepper from '../components/QuantityStepper/QuantityStepper'
@@ -14,6 +14,7 @@ function Cart() {
   usePageTitle('Shopping cart')
   const { cartItems, cartCount, subtotal, savings, updateQuantity, removeFromCart, clearCart } =
     useShop()
+  const navigate = useNavigate()
 
   if (!cartItems.length) {
     return (
@@ -108,7 +109,11 @@ function Cart() {
             </p>
           ) : null}
 
-          <button type="button" className="btn btn-primary btn-block">
+          <button
+            type="button"
+            className="btn btn-primary btn-block"
+            onClick={() => navigate('/checkout')}
+          >
             Proceed to checkout
           </button>
           <button type="button" className="btn btn-ghost btn-block" onClick={clearCart}>
