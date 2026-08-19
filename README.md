@@ -28,7 +28,7 @@ that survive a page refresh.
 - **Shopping cart** - quantity controls, discount savings, free delivery threshold, saved to local storage
 - **Wishlist** - save products for later and move the whole list to the cart in one click
 - **Responsive design** - tested at 375px, 768px and 1920px
-- **AI: natural language search** - describe what you want in a sentence and the app works out the filters
+- **AI: natural language search** - describe what you want in a sentence and the Gemini API works out the filters, with an on-device parser as backup
 - **AI: recommendation engine** - "Recommended for you" and "Similar products" built from what you view, save and buy
 - **AI: price drop prediction** - a fitted price trend that estimates the price two weeks out
 
@@ -48,33 +48,50 @@ for the best.
 - **Styling:** CSS3 with custom properties, one stylesheet per component, an 8px spacing scale and a three colour palette
 - **Routing:** React Router DOM v6
 - **Icons:** React Icons (Feather set)
-- **APIs:** [DummyJSON Products API](https://dummyjson.com/docs/products) - no key required
-- **AI:** written from scratch in plain JavaScript - rule based query parsing, TF-IDF vectors with cosine similarity, and least squares linear regression
+- **APIs:** [DummyJSON Products API](https://dummyjson.com/docs/products) for the catalogue, [Google Gemini API](https://ai.google.dev/) (`gemini-2.5-flash`) for query understanding
+- **AI:** Gemini with structured JSON output for natural language search, plus models written from scratch in plain JavaScript - a rule based query parser, TF-IDF vectors with cosine similarity, and least squares linear regression
 - **Deployment:** Vercel or Netlify
 
 ## 🤖 AI Integration
 
-Three AI features run entirely in the browser, so there is no API key to leak and no
-request cost. Each one is described below with the idea behind it.
+Three AI features power the app. Two of them run entirely in the browser; the third calls
+the Gemini API when a key is available. Each one is described below with the idea behind it.
 
 ### 1. Natural language search
 
-`src/utils/nlpSearch.js` turns a sentence into the same filter object the sidebar
-produces. It handles:
+Type a request the way you would say it out loud and the filters are worked out for you.
+Two engines sit behind the search box.
+
+**Gemini (`src/services/gemini.js`).** The request goes to `gemini-2.5-flash` along with
+the exact category slugs and brand names in the catalogue. A response schema forces the
+model to reply with structured JSON rather than prose, and thinking is disabled to keep
+the round trip near a second. Its answer is never trusted directly: categories and brands
+are checked against the real catalogue, prices are sanity checked and swapped if reversed,
+the rating is clamped to 0-5 and the sort key must be one the app actually supports. This
+is what handles a request with no product words in it at all:
+
+| What you type | What Gemini extracts |
+| --- | --- |
+| `my phone screen keeps cracking, what should I get` | Mobile Accessories, keyword "screen protector" |
+| `gift for my wife who loves perfume, up to 150` | Fragrances, max price 150, keyword "gift" |
+| `best rated laptop for college, budget around 900` | Laptops, max price 900, sorted by rating |
+
+**On-device parser (`src/utils/nlpSearch.js`).** If no API key is configured, the request
+fails or the model returns nothing usable, the same sentence is parsed locally instead.
+It recognises price phrases (`under`, `over`, `between`, `around`, `1k`), rating phrases,
+discount wording, sort intent, gender hints and around 90 everyday product words:
 
 | What you type | What it extracts |
 | --- | --- |
-| `wireless headphones under $50 rated above 4` | category Mobile Accessories, max price 50, min rating 4, keywords "wireless headphones" |
-| `cheapest samsung smartphone` | category Smartphones, brand Samsung, sort by price ascending |
-| `womens shoes on sale between 20 and 80` | category Womens Shoes, discounted only, price 20 to 80 |
-| `top rated laptops around 1200` | category Laptops, price 960 to 1440, min rating 4.5, sort by rating |
+| `wireless headphones under $50 rated above 4` | Mobile Accessories, max price 50, min rating 4 |
+| `cheapest samsung smartphone` | Smartphones, brand Samsung, sorted by price ascending |
+| `womens shoes on sale between 20 and 80` | Womens Shoes, discounted only, price 20 to 80 |
 
-Price phrases (`under`, `over`, `between`, `around`, `1k`), rating phrases, discount
-phrases, sort intent, gender hints and around 90 everyday product words are recognised.
-Whatever is left over becomes the keywords, and products are ranked against them with
-TF-IDF cosine relevance (`src/utils/textIndex.js`) so a rare word like "titanium"
-counts for far more than a common one. The parsed result is shown back to the user as
-chips, so it is always clear why a product list changed.
+Whichever engine answers, the leftover words become keywords and products are ranked
+against them with TF-IDF cosine relevance (`src/utils/textIndex.js`), so a rare word like
+"titanium" counts for far more than a common one. The result is always shown back as
+chips with a label saying whether Gemini or the device read the sentence, so the shopper
+can see why the product list changed.
 
 ### 2. Recommendation engine
 
@@ -94,12 +111,19 @@ weeks forward, and the R squared value of the fit becomes the confidence figure.
 product page shows the trend line, the dashed forecast, and a plain English verdict:
 likely to drop, likely to rise or holding steady.
 
-**Challenges faced.** The query parser was the hard part. Matching on single words alone
-produced nonsense, for example "accessories" pulling in mobile accessories when the
-shopper typed "gym accessories", so the word lists were narrowed and word boundary
-matching was used everywhere. The recommendation scoring also needed limiting: price
-similarity alone was ranking a chair next to a smartphone, so price is only allowed to
-refine products that already share a category, brand or vocabulary.
+**Challenges faced.** Getting a language model to return something a UI can use was the
+first problem: free text answers were impossible to filter with, so the request moves to
+a response schema and every field of the reply is validated against the catalogue before
+it touches the filters. A model that invents a category it likes the sound of should not
+be able to empty the product grid. The second problem was not depending on it, since the
+key can be missing and the network can fail, which is why the rule based parser stayed in
+the project as a fallback rather than being deleted once Gemini worked. Writing that
+parser had its own trap: matching on single words alone produced nonsense, for example
+"accessories" pulling in mobile accessories when the shopper typed "gym accessories", so
+the word lists were narrowed and word boundary matching was used everywhere. The
+recommendation scoring needed limiting too, as price similarity alone was ranking a chair
+next to a smartphone, so price is only allowed to refine products that already share a
+category, brand or vocabulary.
 
 ## 🚀 Setup Instructions
 
@@ -128,15 +152,28 @@ refine products that already share a category, brand or vocabulary.
    npm install
    ```
 
-4. Start the development server
+4. Add a Gemini API key (optional)
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+   Put a key from [Google AI Studio](https://aistudio.google.com/apikey) in
+   `.env.local` as `VITE_GEMINI_API_KEY`. The file is git ignored and is never
+   committed. Skip this step and natural language search falls back to the parser
+   that runs in the browser, so nothing breaks without a key.
+
+   When deploying, add the same variable in the Vercel or Netlify project settings.
+
+5. Start the development server
 
    ```bash
    npm run dev
    ```
 
-5. Open `http://localhost:3000` in your browser
+6. Open `http://localhost:3000` in your browser
 
-No `.env` file is needed. The catalogue API is public and the AI features run locally.
+The catalogue API is public and needs no key.
 
 To create a production build, run `npm run build` and preview it with `npm run preview`.
 
@@ -174,7 +211,8 @@ src/
 │   └── Wishlist.jsx
 ├── services/
 │   ├── api.js                fetching and normalising products
-│   └── fallbackProducts.js   offline snapshot of the catalogue
+│   ├── fallbackProducts.js   offline snapshot of the catalogue
+│   └── gemini.js             Gemini query understanding with validation
 ├── utils/
 │   ├── filters.js            filtering, searching and sorting
 │   ├── format.js             price, date and text formatting
@@ -201,6 +239,10 @@ Tested and working on:
 | --- |
 | ![Shop page](docs/screenshots/home.png) |
 
+| Natural language search answered by Gemini |
+| --- |
+| ![AI search](docs/screenshots/ai-search.png) |
+
 | Product details with price outlook | Mobile layout |
 | --- | --- |
 | ![Product details](docs/screenshots/product-details.png) | ![Mobile layout](docs/screenshots/mobile.png) |
@@ -219,9 +261,12 @@ Tested and working on:
   this app needs.
 - **Offline fallback.** If the catalogue request fails, a saved snapshot of the products
   is used and a notice is shown, so the deployed site never renders an empty page.
-- **Explainable AI.** The parsed query is displayed as chips and the forecast shows its
-  confidence, because a suggestion the user cannot understand is a suggestion they will
-  not trust.
+- **Explainable AI.** The parsed query is displayed as chips, the panel says which engine
+  read the sentence, and the forecast shows its confidence, because a suggestion the user
+  cannot understand is a suggestion they will not trust.
+- **No hard dependency on the model.** Gemini improves the search but is never required.
+  Without a key, without network, or on an unusable answer, the local parser takes over
+  and the shopper sees no error.
 
 ## 🐛 Known Issues
 
@@ -231,6 +276,10 @@ Tested and working on:
 - Checkout is a UI only button, as the project is front-end only.
 - Very broad natural language queries such as "something nice for my sister" have no
   filters to extract and fall back to keyword relevance alone.
+- Any API key used by a front-end application is visible in the built JavaScript, which
+  is a property of the stack rather than of this project. The Gemini key is kept out of
+  the repository in `.env.local`, and a key used for a public deployment should be
+  restricted to the deployed domain in the Google Cloud console and rotated if it leaks.
 
 ## 🔮 Future Enhancements
 
@@ -255,4 +304,5 @@ This project is open source and available under the [MIT License](LICENSE).
 - [DummyJSON](https://dummyjson.com) for the free product catalogue and images
 - [React Icons](https://react-icons.github.io/react-icons/) for the Feather icon set
 - [Google Fonts](https://fonts.google.com) for Outfit and Inter
+- [Google AI Studio](https://aistudio.google.com) for the Gemini API used by the search box
 - The React documentation, which was the reference for the hooks patterns used here
