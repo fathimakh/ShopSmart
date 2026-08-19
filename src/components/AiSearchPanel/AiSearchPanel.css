@@ -121,6 +121,30 @@
   color: var(--color-muted);
 }
 
+.ai-search-summary {
+  flex-basis: 100%;
+  font-size: 0.88rem;
+  color: var(--color-text);
+}
+
+.ai-search-engine {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-basis: 100%;
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.ai-search-thinking {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
 .ai-search-clear {
   margin-left: auto;
   padding: var(--space-1) var(--space-2);

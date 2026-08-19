@@ -136,7 +136,8 @@ export function parseQuery(query, { categories = [], brands = [] } = {}) {
     filters: { categories: [], brands: [], minPrice: '', maxPrice: '', minRating: 0, minDiscount: 0 },
     sortBy: null,
     keywords: [],
-    chips: []
+    chips: [],
+    source: 'device'
   }
 
   if (!text) return result
@@ -168,7 +169,6 @@ export function parseQuery(query, { categories = [], brands = [] } = {}) {
 
   if (DEAL_PATTERN.test(text)) {
     result.filters.minDiscount = 10
-    result.chips.push('On discount')
   }
 
   const sortRule = SORT_RULES.find((rule) => rule.pattern.test(text))
@@ -193,27 +193,42 @@ export function parseQuery(query, { categories = [], brands = [] } = {}) {
     .filter((token) => !consumedWords.has(token))
     .filter((token) => !/^\d+$/.test(token))
 
-  if (result.filters.categories.length) {
-    result.chips.unshift(`In ${result.filters.categories.map(titleCase).join(', ')}`)
-  }
-  if (result.filters.brands.length) {
-    result.chips.push(`Brand: ${result.filters.brands.join(', ')}`)
-  }
-  if (result.filters.minPrice !== '' && result.filters.maxPrice !== '') {
-    result.chips.push(`$${result.filters.minPrice} to $${result.filters.maxPrice}`)
-  } else if (result.filters.maxPrice !== '') {
-    result.chips.push(`Under $${result.filters.maxPrice}`)
-  } else if (result.filters.minPrice !== '') {
-    result.chips.push(`Over $${result.filters.minPrice}`)
-  }
-  if (result.filters.minRating) {
-    result.chips.push(`${result.filters.minRating} stars and up`)
-  }
-  if (result.keywords.length) {
-    result.chips.push(`Matching "${result.keywords.join(' ')}"`)
-  }
+  result.chips = describeFilters(result.filters, result.keywords)
 
   return result
+}
+
+/**
+ * Turns a filter object into the short chips shown under the search box, so the
+ * shopper can see exactly how their sentence was read.
+ */
+export function describeFilters(filters, keywords = []) {
+  const chips = []
+
+  if (filters.categories.length) {
+    chips.push(`In ${filters.categories.map(titleCase).join(', ')}`)
+  }
+  if (filters.brands.length) {
+    chips.push(`Brand: ${filters.brands.join(', ')}`)
+  }
+  if (filters.minPrice !== '' && filters.maxPrice !== '') {
+    chips.push(`$${filters.minPrice} to $${filters.maxPrice}`)
+  } else if (filters.maxPrice !== '') {
+    chips.push(`Under $${filters.maxPrice}`)
+  } else if (filters.minPrice !== '') {
+    chips.push(`Over $${filters.minPrice}`)
+  }
+  if (filters.minRating) {
+    chips.push(`${filters.minRating} stars and up`)
+  }
+  if (filters.minDiscount) {
+    chips.push('On discount')
+  }
+  if (keywords.length) {
+    chips.push(`Matching "${keywords.join(' ')}"`)
+  }
+
+  return chips
 }
 
 /**

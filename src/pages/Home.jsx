@@ -11,6 +11,7 @@ import EmptyState from '../components/EmptyState/EmptyState'
 import useDebounce from '../hooks/useDebounce'
 import { buildTextIndex } from '../utils/textIndex'
 import { parseQuery, rankByRelevance } from '../utils/nlpSearch'
+import { isGeminiEnabled, parseQueryWithGemini } from '../services/gemini'
 import { getRecommendations } from '../utils/recommend'
 import {
   applyFilters,
@@ -31,6 +32,7 @@ function Home() {
   const [query, setQuery] = useState('')
   const [sortBy, setSortBy] = useState('featured')
   const [aiSearch, setAiSearch] = useState(null)
+  const [aiThinking, setAiThinking] = useState(false)
   const debouncedQuery = useDebounce(query)
 
   const isLoading = status === 'loading'
@@ -58,12 +60,32 @@ function Home() {
     [products, textIndex, recentlyViewed, wishlist, cart]
   )
 
-  const runAiSearch = (naturalQuery) => {
-    const parsed = parseQuery(naturalQuery, { categories, brands })
+  // Gemini reads the sentence when a key is configured; the on-device parser covers
+  // the rest of the time, so search never depends on the network being available.
+  const runAiSearch = async (naturalQuery) => {
+    setAiThinking(true)
+
+    let parsed = null
+    if (isGeminiEnabled()) {
+      try {
+        const answer = await parseQueryWithGemini(naturalQuery, { categories, brands })
+        if (countActiveFilters(answer.filters) || answer.keywords.length) {
+          parsed = answer
+        }
+      } catch (error) {
+        parsed = null
+      }
+    }
+
+    if (!parsed) {
+      parsed = parseQuery(naturalQuery, { categories, brands })
+    }
+
     setAiSearch(parsed)
     setFilters({ ...defaultFilters, ...parsed.filters })
     setSortBy(parsed.sortBy || 'relevance')
     setQuery('')
+    setAiThinking(false)
   }
 
   const clearAiSearch = () => {
@@ -93,6 +115,9 @@ function Home() {
         onSearch={runAiSearch}
         onClear={clearAiSearch}
         chips={aiSearch ? aiSearch.chips : []}
+        summary={aiSearch ? aiSearch.summary : ''}
+        source={aiSearch ? aiSearch.source : null}
+        isThinking={aiThinking}
         resultCount={visibleProducts.length}
       />
 

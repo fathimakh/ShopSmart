@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { FiCornerDownLeft, FiX, FiZap } from 'react-icons/fi'
+import { FiCornerDownLeft, FiCpu, FiX, FiZap } from 'react-icons/fi'
 import './AiSearchPanel.css'
 
 const examples = [
@@ -9,7 +9,7 @@ const examples = [
   'womens bags on sale'
 ]
 
-function AiSearchPanel({ onSearch, onClear, chips, resultCount }) {
+function AiSearchPanel({ onSearch, onClear, chips, summary, source, isThinking, resultCount }) {
   const [value, setValue] = useState('')
 
   const runSearch = (query) => {
@@ -56,13 +56,19 @@ function AiSearchPanel({ onSearch, onClear, chips, resultCount }) {
           placeholder="e.g. lightweight running shoes under $80 with good reviews"
           onChange={(event) => setValue(event.target.value)}
         />
-        <button type="submit" className="btn btn-primary" disabled={!value.trim()}>
+        <button type="submit" className="btn btn-primary" disabled={!value.trim() || isThinking}>
           <FiCornerDownLeft aria-hidden="true" />
-          Search
+          {isThinking ? 'Reading' : 'Search'}
         </button>
       </form>
 
-      {chips.length ? (
+      {isThinking ? (
+        <p className="ai-search-thinking" role="status">
+          Working out what you are looking for
+        </p>
+      ) : null}
+
+      {!isThinking && chips.length ? (
         <div className="ai-search-result" role="status">
           <p className="ai-search-result-label">Understood as</p>
           <ul className="ai-search-chips">
@@ -77,8 +83,17 @@ function AiSearchPanel({ onSearch, onClear, chips, resultCount }) {
             <FiX aria-hidden="true" />
             Clear
           </button>
+
+          {summary ? <p className="ai-search-summary">{summary}</p> : null}
+
+          <p className="ai-search-engine">
+            <FiCpu aria-hidden="true" />
+            {source === 'gemini' ? 'Read by Gemini' : 'Read on this device'}
+          </p>
         </div>
-      ) : (
+      ) : null}
+
+      {!isThinking && !chips.length ? (
         <div className="ai-search-examples">
           <p>Try:</p>
           <ul>
@@ -91,7 +106,7 @@ function AiSearchPanel({ onSearch, onClear, chips, resultCount }) {
             ))}
           </ul>
         </div>
-      )}
+      ) : null}
     </section>
   )
 }
