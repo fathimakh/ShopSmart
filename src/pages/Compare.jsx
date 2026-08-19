@@ -5,6 +5,7 @@ import StarRating from '../components/StarRating/StarRating'
 import EmptyState from '../components/EmptyState/EmptyState'
 import { formatPrice } from '../utils/format'
 import './Compare.css'
+import usePageTitle from '../hooks/usePageTitle'
 
 const specRows = [
   'SKU',
@@ -17,6 +18,7 @@ const specRows = [
 ]
 
 function Compare() {
+  usePageTitle('Compare products')
   const { compareItems, compareLimit, toggleCompare, clearCompare, addToCart } = useShop()
 
   if (!compareItems.length) {
@@ -49,7 +51,7 @@ function Compare() {
       </div>
 
       <div className="compare-scroll">
-        <table className="compare-table">
+        <table className={compareItems.length < 3 ? 'compare-table is-narrow' : 'compare-table'}>
           <caption className="visually-hidden">
             Side by side comparison of the selected products
           </caption>

@@ -6,8 +6,10 @@ import ProductGrid from '../components/ProductGrid/ProductGrid'
 import EmptyState from '../components/EmptyState/EmptyState'
 import { formatPrice, pluralize } from '../utils/format'
 import './Wishlist.css'
+import usePageTitle from '../hooks/usePageTitle'
 
 function Wishlist() {
+  usePageTitle('Wishlist')
   const { wishlistItems, clearWishlist, addToCart } = useShop()
   const { status } = useCatalog()
 

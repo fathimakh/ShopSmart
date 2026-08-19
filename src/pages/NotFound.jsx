@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
 import './NotFound.css'
+import usePageTitle from '../hooks/usePageTitle'
 
 function NotFound() {
+  usePageTitle('Page not found')
   return (
     <div className="container not-found">
       <p className="not-found-code">404</p>

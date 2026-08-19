@@ -12,3 +12,4 @@ npm-debug.log*
 
 # Course material, not part of the source code
 *.pdf
+.gstack/

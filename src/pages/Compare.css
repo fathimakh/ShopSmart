@@ -16,6 +16,17 @@
   min-width: 620px;
 }
 
+/* With one or two products a full width table leaves huge stretched columns. */
+.compare-table.is-narrow {
+  width: auto;
+  min-width: 0;
+}
+
+.compare-table.is-narrow th:not(.compare-label),
+.compare-table.is-narrow td {
+  width: 240px;
+}
+
 .compare-table th,
 .compare-table td {
   padding: var(--space-3);

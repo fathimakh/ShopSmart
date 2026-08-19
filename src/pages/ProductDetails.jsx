@@ -11,6 +11,7 @@ import EmptyState from '../components/EmptyState/EmptyState'
 import { buildTextIndex } from '../utils/textIndex'
 import { getSimilarProducts } from '../utils/recommend'
 import { formatDate, formatPrice, pluralize } from '../utils/format'
+import usePageTitle from '../hooks/usePageTitle'
 import './ProductDetails.css'
 
 function ProductDetails() {
@@ -31,6 +32,8 @@ function ProductDetails() {
     () => (product ? getSimilarProducts(product, products, textIndex) : []),
     [product, products, textIndex]
   )
+
+  usePageTitle(product ? product.title : 'Product')
 
   useEffect(() => {
     setActiveImage(0)

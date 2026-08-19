@@ -148,7 +148,9 @@ function Home() {
             <h2 id="results-heading">
               {aiSearch ? 'Best matches' : debouncedQuery ? `Results for "${debouncedQuery}"` : 'All products'}
             </h2>
-            {!isLoading ? <p>{pluralize(visibleProducts.length, 'product')} found</p> : null}
+            <p role="status" aria-live="polite">
+              {isLoading ? 'Loading products' : `${pluralize(visibleProducts.length, 'product')} found`}
+            </p>
           </div>
 
           {!isLoading && !visibleProducts.length ? (

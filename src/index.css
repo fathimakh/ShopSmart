@@ -141,6 +141,14 @@ button {
   font-size: 0.875rem;
 }
 
+@media (max-width: 520px) {
+  .section-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+}
+
 .btn {
   display: inline-flex;
   align-items: center;

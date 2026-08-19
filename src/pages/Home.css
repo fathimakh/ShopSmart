@@ -55,7 +55,7 @@
   top: calc(var(--header-height) + var(--space-3));
 }
 
-.home-filter-toggle {
+.home-layout .home-filter-toggle {
   display: none;
 }
 
@@ -76,7 +76,7 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .home-filter-toggle {
+  .home-layout .home-filter-toggle {
     display: inline-flex;
     justify-self: start;
   }
