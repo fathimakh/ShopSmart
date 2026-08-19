@@ -271,7 +271,7 @@ src/
 
 Tested and working on:
 
-- Mobile devices from 375px, with a hamburger menu, a collapsible filter drawer and a two column product grid
+- Mobile devices from 375px, with a bottom navigation bar for shop, assistant, saved items and cart, a collapsible filter drawer and a two column product grid
 - Tablets from 768px
 - Desktops from 1024px, with a sticky filter sidebar
 
@@ -306,6 +306,10 @@ Tested and working on:
   `--space-7`, which keeps rhythm consistent without eyeballing values.
 - **Plain CSS per component.** Each component owns its stylesheet next to its JSX, so
   styles stay easy to trace and nothing leaks between components.
+- **Thumb reachable navigation on phones.** Below 768px the links move into a fixed
+  bottom bar with live cart and wishlist counts, which is where a phone user's thumb
+  already is. The comparison tray and the assistant input sit above it rather than under
+  it.
 - **Code split by route.** Only the shop page ships in the first bundle. The other pages
   and the 65KB offline catalogue snapshot are fetched when they are actually needed, which
   keeps the initial download about a third smaller.

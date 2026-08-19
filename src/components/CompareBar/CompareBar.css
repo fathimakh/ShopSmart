@@ -74,3 +74,12 @@
     flex: 1;
   }
 }
+
+@media (max-width: 767px) {
+  .compare-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: var(--bottom-nav-height);
+  }
+}

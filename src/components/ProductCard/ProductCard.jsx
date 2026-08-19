@@ -49,15 +49,23 @@ function ProductCard({ product }) {
             ) : null}
           </p>
 
-          <button
-            type="button"
-            className={inCart ? 'btn btn-outline product-card-cart' : 'btn btn-primary product-card-cart'}
-            onClick={() => addToCart(product.id)}
-          >
-            {inCart ? <FiCheck aria-hidden="true" /> : <FiShoppingCart aria-hidden="true" />}
-            {inCart ? 'In cart' : 'Add to cart'}
-            <span className="visually-hidden"> - {product.title}</span>
-          </button>
+          {inCart ? (
+            <Link className="btn btn-outline product-card-cart" to="/cart">
+              <FiCheck aria-hidden="true" />
+              Go to cart
+              <span className="visually-hidden"> - {product.title} is in your cart</span>
+            </Link>
+          ) : (
+            <button
+              type="button"
+              className="btn btn-primary product-card-cart"
+              onClick={() => addToCart(product.id)}
+            >
+              <FiShoppingCart aria-hidden="true" />
+              Add to cart
+              <span className="visually-hidden"> - {product.title}</span>
+            </button>
+          )}
 
           <label className={compared ? 'product-card-compare is-active' : 'product-card-compare'}>
             <input

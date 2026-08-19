@@ -14,3 +14,9 @@
   text-align: center;
   color: var(--color-muted);
 }
+
+@media (max-width: 767px) {
+  .app {
+    padding-bottom: var(--bottom-nav-height);
+  }
+}

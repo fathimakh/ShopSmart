@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom'
 import Header from './components/Header/Header'
 import Footer from './components/Footer/Footer'
 import CompareBar from './components/CompareBar/CompareBar'
+import BottomNav from './components/BottomNav/BottomNav'
 import Home from './pages/Home'
 import './App.css'
 
@@ -38,6 +39,7 @@ function App() {
       </main>
       <CompareBar />
       <Footer />
+      <BottomNav />
     </div>
   )
 }

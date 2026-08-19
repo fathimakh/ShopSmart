@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { FiChevronRight, FiHeart, FiPackage, FiShoppingCart, FiTruck } from 'react-icons/fi'
+import { FiCheck, FiChevronRight, FiHeart, FiPackage, FiShoppingCart, FiTruck } from 'react-icons/fi'
 import { useCatalog } from '../context/CatalogContext'
 import { useShop } from '../context/ShopContext'
 import StarRating from '../components/StarRating/StarRating'
@@ -17,7 +17,7 @@ import './ProductDetails.css'
 function ProductDetails() {
   const { id } = useParams()
   const { products, status } = useCatalog()
-  const { addToCart, isWishlisted, toggleWishlist, recordView } = useShop()
+  const { addToCart, isInCart, isWishlisted, toggleWishlist, recordView } = useShop()
   const [activeImage, setActiveImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
 
@@ -140,8 +140,14 @@ function ProductDetails() {
               onClick={() => addToCart(product.id, quantity)}
             >
               <FiShoppingCart aria-hidden="true" />
-              Add to cart
+              {isInCart(product.id) ? 'Add more' : 'Add to cart'}
             </button>
+            {isInCart(product.id) ? (
+              <Link className="btn btn-outline product-actions-cart" to="/cart">
+                <FiCheck aria-hidden="true" />
+                Go to cart
+              </Link>
+            ) : null}
             <button
               type="button"
               className={
