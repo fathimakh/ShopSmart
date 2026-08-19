@@ -156,13 +156,13 @@ category, brand or vocabulary.
 1. Clone the repository
 
    ```bash
-   git clone https://github.com/your-username/shopsmart.git
+   git clone https://github.com/fathimakh/ShopSmart.git
    ```
 
 2. Navigate to the project directory
 
    ```bash
-   cd shopsmart
+   cd ShopSmart
    ```
 
 3. Install dependencies
@@ -327,6 +327,7 @@ Tested and working on:
 
 **Fathima K H**
 
+- GitHub: [@fathimakh](https://github.com/fathimakh)
 - Email: fathimakh07@gmail.com
 
 ## 📄 License
