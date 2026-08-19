@@ -18,6 +18,10 @@
   font-size: 1.35rem;
 }
 
+.empty-state-title {
+  font-size: 1.25rem;
+}
+
 .empty-state p {
   color: var(--color-muted);
   max-width: 46ch;

@@ -67,6 +67,7 @@ function ProductDetails() {
         <EmptyState
           icon={FiPackage}
           title="Product not found"
+          headingLevel={1}
           message="This product is no longer part of the catalogue."
           action={
             <Link className="btn btn-primary" to="/">

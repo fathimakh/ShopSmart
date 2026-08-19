@@ -27,6 +27,7 @@ function Wishlist() {
         <EmptyState
           icon={FiHeart}
           title="No saved products yet"
+          headingLevel={1}
           message="Tap the heart on any product to keep it here for later."
           action={
             <Link className="btn btn-primary" to="/">

@@ -27,6 +27,7 @@ function Compare() {
         <EmptyState
           icon={FiColumns}
           title="Nothing to compare yet"
+          headingLevel={1}
           message={`Select up to ${compareLimit} products from the shop to line up their price, rating and specifications.`}
           action={
             <Link className="btn btn-primary" to="/">

@@ -21,6 +21,7 @@ function Cart() {
         <EmptyState
           icon={FiShoppingCart}
           title="Your cart is empty"
+          headingLevel={1}
           message="Products you add will stay here, even if you close the browser."
           action={
             <Link className="btn btn-primary" to="/">
