@@ -3,6 +3,9 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { FiSliders } from 'react-icons/fi'
 import { useCatalog } from '../context/CatalogContext'
 import { useShop } from '../context/ShopContext'
+import Hero from '../components/Hero/Hero'
+import CategoryTiles from '../components/CategoryTiles/CategoryTiles'
+import ActiveFilters from '../components/ActiveFilters/ActiveFilters'
 import FilterPanel from '../components/FilterPanel/FilterPanel'
 import ProductGrid from '../components/ProductGrid/ProductGrid'
 import SearchBar from '../components/SearchBar/SearchBar'
@@ -51,6 +54,30 @@ function Home() {
     return sortBy === 'relevance' ? matches : sortProducts(matches, sortBy)
   }, [products, filters, debouncedQuery, sortBy, aiSearch, textIndex])
 
+  // A representative image and a count for every category tile.
+  const categoryTiles = useMemo(
+    () =>
+      categories.map((category) => {
+        const inCategory = products.filter((product) => product.category === category)
+        const best = inCategory.reduce(
+          (top, product) => (product.rating > top.rating ? product : top),
+          inCategory[0]
+        )
+        return { category, count: inCategory.length, thumbnail: best.thumbnail }
+      }),
+    [categories, products]
+  )
+
+  const featured = useMemo(
+    () => [...products].sort((a, b) => b.discount - a.discount || b.rating - a.rating).slice(0, 3),
+    [products]
+  )
+
+  const deals = useMemo(
+    () => sortProducts(products, 'discount').slice(0, 8),
+    [products]
+  )
+
   const recommendations = useMemo(
     () =>
       getRecommendations(products, textIndex, {
@@ -86,20 +113,31 @@ function Home() {
 
   return (
     <div className="container home">
-      <section className="home-hero">
-        <p className="badge badge-primary">Smarter product discovery</p>
-        <h1>Find the right product without endless scrolling</h1>
-        <p className="home-hero-text">
-          Browse a live catalogue, narrow it down with detailed filters and compare the
-          shortlist side by side before you buy.
-        </p>
-      </section>
+      {!isLoading ? (
+        <Hero
+          featured={featured}
+          catalogueSize={products.length}
+          categoryCount={categories.length}
+          brandCount={brands.length}
+        />
+      ) : null}
 
       {usingOfflineData ? (
         <p className="home-notice" role="status">
           Live catalogue is unavailable right now, so a saved offline copy is being shown.
         </p>
       ) : null}
+
+      <CategoryTiles
+        categories={categoryTiles}
+        activeCategory={filters.categories.length === 1 ? filters.categories[0] : null}
+        onSelect={(category) =>
+          setFilters((current) => ({
+            ...current,
+            categories: current.categories.includes(category) ? [] : [category]
+          }))
+        }
+      />
 
       <AiSearchPanel
         onSearch={askAssistant}
@@ -108,6 +146,12 @@ function Home() {
         summary={aiSearch ? aiSearch.summary : ''}
         source={aiSearch ? aiSearch.source : null}
         resultCount={visibleProducts.length}
+      />
+
+      <RecommendationRow
+        title="Today's biggest savings"
+        subtitle="The steepest discounts in the catalogue right now"
+        products={deals}
       />
 
       <RecommendationRow
@@ -158,6 +202,12 @@ function Home() {
         </aside>
 
         <section className="home-results" aria-labelledby="results-heading">
+          <ActiveFilters
+            filters={filters}
+            onChange={setFilters}
+            onReset={clearAiSearch}
+          />
+
           <div className="section-heading">
             <h2 id="results-heading">
               {aiSearch ? 'Best matches' : debouncedQuery ? `Results for "${debouncedQuery}"` : 'All products'}

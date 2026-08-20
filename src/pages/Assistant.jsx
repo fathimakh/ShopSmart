@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { FiCpu, FiSend, FiTrash2, FiZap } from 'react-icons/fi'
+import { FiCpu, FiSend, FiShoppingBag, FiTrash2, FiZap } from 'react-icons/fi'
 import { useCatalog } from '../context/CatalogContext'
 import useShoppingAssistant from '../hooks/useShoppingAssistant'
 import usePageTitle from '../hooks/usePageTitle'
@@ -112,55 +112,74 @@ function Assistant() {
             </p>
           ) : (
             <article key={message.id} className="assistant-answer">
-              <p className="assistant-bubble">{message.text}</p>
+              <span className="assistant-avatar" aria-hidden="true">
+                <FiZap />
+              </span>
 
-              {message.chips.length ? (
-                <ul className="assistant-chips">
-                  {message.chips.map((chip) => (
-                    <li key={chip} className="badge badge-primary">
-                      {chip}
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
+              <div className="assistant-answer-body">
+                <p className="assistant-bubble">{message.text}</p>
 
-              {message.productIds.length ? (
-                <>
-                  <ul className="assistant-results">
-                    {resolveProducts(message.productIds).map((product) => (
-                      <li key={product.id}>
-                        <ProductCard product={product} />
+                {message.chips.length ? (
+                  <ul className="assistant-chips">
+                    {message.chips.map((chip) => (
+                      <li key={chip} className="badge badge-primary">
+                        {chip}
                       </li>
                     ))}
                   </ul>
+                ) : null}
 
-                  <div className="assistant-answer-footer">
-                    <p>
-                      {message.total > message.productIds.length
-                        ? `Showing ${message.productIds.length} of ${pluralize(message.total, 'match', 'matches')}`
-                        : pluralize(message.total, 'match', 'matches')}
-                    </p>
-                    <button
-                      type="button"
-                      className="btn btn-outline"
-                      onClick={() => openInShop(message)}
-                    >
-                      Open these in the shop
-                    </button>
+                {message.productIds.length ? (
+                  <div className="assistant-results-card">
+                    <div className="assistant-results-head">
+                      <p>
+                        <FiShoppingBag aria-hidden="true" />
+                        {message.total > message.productIds.length
+                          ? `Showing ${message.productIds.length} of ${pluralize(message.total, 'match', 'matches')}`
+                          : pluralize(message.total, 'match', 'matches')}
+                      </p>
+                      <button
+                        type="button"
+                        className="btn btn-outline"
+                        onClick={() => openInShop(message)}
+                      >
+                        Open in shop
+                      </button>
+                    </div>
+
+                    <ul className="assistant-results">
+                      {resolveProducts(message.productIds).map((product) => (
+                        <li key={product.id}>
+                          <ProductCard product={product} />
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                </>
-              ) : null}
+                ) : null}
 
-              <p className="assistant-engine">
-                <FiCpu aria-hidden="true" />
-                {message.source === 'gemini' ? 'Read by Gemini' : 'Read on this device'}
-              </p>
+                <p className="assistant-engine">
+                  <FiCpu aria-hidden="true" />
+                  {message.source === 'gemini' ? 'Read by Gemini' : 'Read on this device'}
+                </p>
+              </div>
             </article>
           )
         )}
 
         {isThinking ? (
-          <p className="assistant-bubble is-thinking">Looking through the catalogue</p>
+          <div className="assistant-answer">
+            <span className="assistant-avatar" aria-hidden="true">
+              <FiZap />
+            </span>
+            <p className="assistant-bubble is-thinking">
+              Looking through the catalogue
+              <span className="assistant-dots" aria-hidden="true">
+                <i />
+                <i />
+                <i />
+              </span>
+            </p>
+          </div>
         ) : null}
       </div>
 

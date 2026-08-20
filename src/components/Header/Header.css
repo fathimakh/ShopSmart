@@ -7,6 +7,28 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+.header-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 6px var(--space-3);
+  background-color: var(--color-text);
+  color: #fff;
+  font-size: 0.75rem;
+  letter-spacing: 0.01em;
+}
+
+.header-strip svg {
+  flex-shrink: 0;
+}
+
+.header-strip-divider {
+  width: 1px;
+  height: 12px;
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
 .header-inner {
   min-height: var(--header-height);
   display: flex;
@@ -94,11 +116,17 @@
 }
 
 @media (max-width: 767px) {
+  .header-strip {
+    font-size: 0.7rem;
+    padding-inline: var(--space-2);
+    white-space: nowrap;
+  }
+
   .header-nav {
     position: absolute;
     left: 0;
     right: 0;
-    top: var(--header-height);
+    top: 100%;
     background-color: var(--color-surface);
     border-bottom: 1px solid var(--color-border);
     box-shadow: var(--shadow-md);
@@ -123,6 +151,14 @@
 
 @media (min-width: 768px) {
   .header-toggle {
+    display: none;
+  }
+}
+
+/* The strip has to stay on one line, so the longer half steps aside on phones. */
+@media (max-width: 600px) {
+  .header-strip-divider,
+  .header-strip-note {
     display: none;
   }
 }

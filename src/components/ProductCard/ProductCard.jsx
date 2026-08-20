@@ -39,7 +39,12 @@ function ProductCard({ product }) {
         <h3 className="product-card-title">
           <Link to={`/product/${product.id}`}>{product.title}</Link>
         </h3>
-        <StarRating value={product.rating} size="sm" />
+        <div className="product-card-signals">
+          <StarRating value={product.rating} size="sm" />
+          {product.stock <= 10 ? (
+            <span className="product-card-stock">Only {product.stock} left</span>
+          ) : null}
+        </div>
 
         <div className="product-card-footer">
           <p className="product-card-price">

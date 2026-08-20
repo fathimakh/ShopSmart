@@ -1,0 +1,51 @@
+.active-filters {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding: var(--space-2) 0;
+}
+
+.active-filters-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
+}
+
+.active-filters ul {
+  display: flex;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}
+
+.active-filters ul button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 4px 10px;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.active-filters ul button:hover {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+.active-filters-clear {
+  border: 0;
+  background: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  text-decoration: underline;
+}
+
+.active-filters-clear:hover {
+  color: var(--color-danger);
+}

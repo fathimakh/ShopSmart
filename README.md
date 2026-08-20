@@ -20,8 +20,9 @@ that survive a page refresh.
 
 ## ✨ Features
 
-- **Product catalogue** - responsive grid of products with images, prices, discounts and ratings, loaded from a public API with skeleton loading states
-- **Advanced filtering** - filter by category, brand, price band or custom price range, and minimum customer rating
+- **Storefront home** - promotional banner built from the day's biggest discounts, category tiles, delivery and returns promises, and a deals carousel
+- **Product catalogue** - responsive grid of products with images, prices, discounts, ratings and low stock hints, loaded from a public API with skeleton loading states
+- **Advanced filtering** - filter by category, brand, price band or custom price range, and minimum customer rating, with every active filter shown as a chip you can remove in one tap
 - **Search and sort** - debounced keyword search plus seven sort options including price, rating, popularity and newest
 - **Product details** - image gallery, full specifications, customer reviews, stock and shipping information
 - **Comparison tool** - line up to four products side by side with the lowest price and best rated options flagged
@@ -299,6 +300,9 @@ Tested and working on:
 
 ## 🎨 Design Choices
 
+- **Laid out like a shop, not a dashboard.** The home page opens with a banner, category
+  tiles and a deals carousel because that is the order a shopper expects, and every image
+  in those sections comes from the live catalogue rather than stock artwork.
 - **Three colours, two fonts.** Indigo for actions, amber for deals and ratings, and a
   neutral grey scale. Outfit for headings, Inter for body text. Everything is defined as
   CSS custom properties in `index.css` so the theme can be changed in one place.
