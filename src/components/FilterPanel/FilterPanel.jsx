@@ -4,7 +4,7 @@ import { priceBands, ratingOptions, toggleValue } from '../../utils/filters'
 import { titleCase } from '../../utils/format'
 import './FilterPanel.css'
 
-function FilterPanel({ categories, brands, filters, onChange, onReset }) {
+function FilterPanel({ categories, brands, filters, onChange, onReset, showCategories = true }) {
   const [brandQuery, setBrandQuery] = useState('')
 
   const visibleBrands = brands.filter((brand) =>
@@ -31,6 +31,7 @@ function FilterPanel({ categories, brands, filters, onChange, onReset }) {
         </button>
       </div>
 
+      {showCategories ? (
       <fieldset className="filter-group">
         <legend>Category</legend>
         <div className="filter-scroll">
@@ -48,6 +49,7 @@ function FilterPanel({ categories, brands, filters, onChange, onReset }) {
           ))}
         </div>
       </fieldset>
+      ) : null}
 
       <fieldset className="filter-group">
         <legend>Price</legend>

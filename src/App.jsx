@@ -14,6 +14,7 @@ const Wishlist = lazy(() => import('./pages/Wishlist'))
 const Compare = lazy(() => import('./pages/Compare'))
 const Assistant = lazy(() => import('./pages/Assistant'))
 const Checkout = lazy(() => import('./pages/Checkout'))
+const CategoryPage = lazy(() => import('./pages/CategoryPage'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/product/:id" element={<ProductDetails />} />
+            <Route path="/category/:slug" element={<CategoryPage />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/compare" element={<Compare />} />

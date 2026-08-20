@@ -128,16 +128,7 @@ function Home() {
         </p>
       ) : null}
 
-      <CategoryTiles
-        categories={categoryTiles}
-        activeCategory={filters.categories.length === 1 ? filters.categories[0] : null}
-        onSelect={(category) =>
-          setFilters((current) => ({
-            ...current,
-            categories: current.categories.includes(category) ? [] : [category]
-          }))
-        }
-      />
+      <CategoryTiles categories={categoryTiles} />
 
       <AiSearchPanel
         onSearch={askAssistant}

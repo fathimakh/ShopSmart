@@ -21,6 +21,7 @@ that survive a page refresh.
 ## ✨ Features
 
 - **Storefront home** - promotional banner built from the day's biggest discounts, category tiles, delivery and returns promises, and a deals carousel
+- **Category pages** - every tile opens a page for that category alone, with its own search, sort, brand and price filters scoped to what is in it
 - **Product catalogue** - responsive grid of products with images, prices, discounts, ratings and low stock hints, loaded from a public API with skeleton loading states
 - **Advanced filtering** - filter by category, brand, price band or custom price range, and minimum customer rating, with every active filter shown as a chip you can remove in one tap
 - **Search and sort** - debounced keyword search plus seven sort options including price, rating, popularity and newest
@@ -245,6 +246,7 @@ src/
 ├── pages/
 │   ├── Assistant.jsx
 │   ├── Cart.jsx
+│   ├── CategoryPage.jsx
 │   ├── Checkout.jsx
 │   ├── Compare.jsx
 │   ├── Home.jsx
@@ -289,6 +291,10 @@ Tested and working on:
 | Natural language search answered by Gemini |
 | --- |
 | ![AI search](docs/screenshots/ai-search.png) |
+
+| Category page |
+| --- |
+| ![Category page](docs/screenshots/category.png) |
 
 | Checkout | Order confirmation |
 | --- | --- |
