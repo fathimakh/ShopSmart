@@ -7,8 +7,7 @@ is heading.
 
 ## 🔗 Live Demo
 
-Add the deployed link here after the first deploy, for example
-`https://shopsmart.vercel.app`.
+**[https://shopsmart-project.netlify.app](https://shopsmart-project.netlify.app)**
 
 ## 📖 Description
 
@@ -29,6 +28,7 @@ that survive a page refresh.
 - **Comparison tool** - line up to four products side by side with the lowest price and best rated options flagged
 - **Shopping cart** - quantity controls, discount savings, free delivery threshold, saved to local storage
 - **Demonstration checkout** - a three step delivery, payment and review flow with live validation, ending in an order confirmation with an order number and delivery date
+- **Order history** - every demo order is kept on the device, with its status, delivery address, payment summary and a buy again button
 - **Wishlist** - save products for later and move the whole list to the cart in one click
 - **Responsive design** - tested at 375px, 768px and 1920px
 - **AI: shopping assistant page** - a dedicated chat where you describe what you need, see the products inline, and keep refining across turns
@@ -54,7 +54,7 @@ for the best.
 - **Icons:** React Icons (Feather set)
 - **APIs:** [DummyJSON Products API](https://dummyjson.com/docs/products) for the catalogue, [Google Gemini API](https://ai.google.dev/) (`gemini-2.5-flash`) for query understanding
 - **AI:** Gemini with structured JSON output for natural language search, plus models written from scratch in plain JavaScript - a rule based query parser, TF-IDF vectors with cosine similarity, and least squares linear regression
-- **Deployment:** Vercel or Netlify
+- **Deployment:** Netlify
 
 ## 🤖 AI Integration
 
@@ -209,6 +209,8 @@ summary of what was bought, and empties the cart.
 Because it is a demonstration:
 
 - nothing is ever sent to a server, and there is no server to send it to
+- placed orders are kept in local storage and listed under Orders, where the status moves
+  from processing to on the way to delivered as the estimated delivery date approaches
 - a banner at the top of the page says so, and the card field warns against entering a
   real card number
 - only the last four digits of the card are kept, and only in this browser's local
@@ -241,6 +243,7 @@ src/
 ├── hooks/
 │   ├── useDebounce.js
 │   ├── useLocalStorage.js
+│   ├── useOrders.js
 │   ├── usePageTitle.js
 │   └── useShoppingAssistant.js   the conversation, its memory and its answers
 ├── styles/
@@ -250,6 +253,8 @@ src/
 │   ├── Cart.jsx
 │   ├── CategoryPage.jsx
 │   ├── Checkout.jsx
+│   ├── OrderDetails.jsx
+│   ├── Orders.jsx
 │   ├── Compare.jsx
 │   ├── Home.jsx
 │   ├── NotFound.jsx
@@ -264,6 +269,7 @@ src/
 │   ├── filters.js            filtering, searching and sorting
 │   ├── format.js             price, date and text formatting
 │   ├── nlpSearch.js          natural language query parsing
+│   ├── orders.js             order status and payment summaries
 │   ├── pricePredict.js       price history and regression forecast
 │   ├── recommend.js          similarity and recommendations
 │   └── textIndex.js          TF-IDF index shared by search and recommendations
@@ -300,7 +306,7 @@ Tested and working on:
 
 | Checkout | Order confirmation |
 | --- | --- |
-| ![Checkout](docs/screenshots/checkout.png) | ![Order confirmed](docs/screenshots/order-confirmed.png) |
+| ![Checkout](docs/screenshots/checkout.png) | ![Order confirmed](docs/screenshots/order.png) |
 
 | Product details with price outlook | Mobile layout |
 | --- | --- |
@@ -370,6 +376,7 @@ Tested and working on:
 **Fathima K H**
 
 - GitHub: [@fathimakh](https://github.com/fathimakh)
+- LinkedIn: [fathima-kh](https://www.linkedin.com/in/fathima-kh/)
 - Email: fathimakh07@gmail.com
 
 ## 📄 License

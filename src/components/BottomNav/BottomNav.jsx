@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { FiGrid, FiHeart, FiShoppingCart, FiZap } from 'react-icons/fi'
+import { FiGrid, FiHeart, FiPackage, FiShoppingCart, FiZap } from 'react-icons/fi'
 import { useShop } from '../../context/ShopContext'
 import './BottomNav.css'
 
@@ -7,6 +7,7 @@ const items = [
   { to: '/', label: 'Shop', icon: FiGrid, end: true, countKey: null },
   { to: '/assistant', label: 'Assistant', icon: FiZap, countKey: null },
   { to: '/wishlist', label: 'Saved', icon: FiHeart, countKey: 'wishlistCount' },
+  { to: '/orders', label: 'Orders', icon: FiPackage, countKey: null },
   { to: '/cart', label: 'Cart', icon: FiShoppingCart, countKey: 'cartCount' }
 ]
 

@@ -1,6 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
-import { FiColumns, FiHeart, FiMenu, FiShoppingCart, FiTruck, FiX, FiZap } from 'react-icons/fi'
+import {
+  FiColumns,
+  FiHeart,
+  FiMenu,
+  FiPackage,
+  FiShoppingCart,
+  FiTruck,
+  FiX,
+  FiZap
+} from 'react-icons/fi'
 import { useShop } from '../../context/ShopContext'
 import './Header.css'
 
@@ -9,6 +18,7 @@ const navLinks = [
   { to: '/assistant', label: 'Assistant', icon: FiZap, countKey: null },
   { to: '/compare', label: 'Compare', icon: FiColumns, countKey: 'compareCount' },
   { to: '/wishlist', label: 'Wishlist', icon: FiHeart, countKey: 'wishlistCount' },
+  { to: '/orders', label: 'Orders', icon: FiPackage, countKey: null },
   { to: '/cart', label: 'Cart', icon: FiShoppingCart, countKey: 'cartCount' }
 ]
 

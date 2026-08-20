@@ -15,6 +15,8 @@ const Compare = lazy(() => import('./pages/Compare'))
 const Assistant = lazy(() => import('./pages/Assistant'))
 const Checkout = lazy(() => import('./pages/Checkout'))
 const CategoryPage = lazy(() => import('./pages/CategoryPage'))
+const Orders = lazy(() => import('./pages/Orders'))
+const OrderDetails = lazy(() => import('./pages/OrderDetails'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
 // Pages that end in a fixed composer read better without the footer below them.
@@ -41,6 +43,8 @@ function App() {
             <Route path="/compare" element={<Compare />} />
             <Route path="/assistant" element={<Assistant />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/orders/:number" element={<OrderDetails />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

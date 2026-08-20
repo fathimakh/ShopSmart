@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FiCheck, FiCreditCard, FiInfo, FiShoppingBag, FiSmartphone, FiTruck } from 'react-icons/fi'
 import { useShop } from '../context/ShopContext'
-import useLocalStorage from '../hooks/useLocalStorage'
+import useOrders from '../hooks/useOrders'
 import usePageTitle from '../hooks/usePageTitle'
 import FormField from '../components/FormField/FormField'
 import EmptyState from '../components/EmptyState/EmptyState'
-import { formatDate, formatPrice, pluralize } from '../utils/format'
+import { formatPrice, pluralize } from '../utils/format'
 import {
   buildOrderNumber,
   estimatedDelivery,
@@ -61,7 +61,7 @@ function Checkout() {
   const [payment, setPayment] = useState(emptyPayment)
   const [errors, setErrors] = useState({})
   const [isPlacing, setIsPlacing] = useState(false)
-  const [order, setOrder] = useLocalStorage('shopsmart:lastOrder', null)
+  const { placeOrder: saveOrder } = useOrders()
 
   const deliveryFee = subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE
   const total = subtotal + deliveryFee
@@ -98,8 +98,10 @@ function Checkout() {
     // Nothing is sent anywhere. The short wait only makes the confirmation feel
     // like a real order being accepted rather than an instant page swap.
     setTimeout(() => {
-      setOrder({
-        number: buildOrderNumber(placedAt),
+      const number = buildOrderNumber(placedAt)
+
+      saveOrder({
+        number,
         placedAt,
         arrivesOn: estimatedDelivery(placedAt),
         items: cartItems.map((item) => ({
@@ -121,74 +123,8 @@ function Checkout() {
       })
       clearCart()
       setIsPlacing(false)
+      navigate(`/orders/${number}`, { replace: true, state: { justPlaced: true } })
     }, 900)
-  }
-
-  if (order && step !== 'done') {
-    const methodLabel = paymentMethods.find((method) => method.id === order.method)?.label
-
-    return (
-      <div className="container checkout-done">
-        <div className="checkout-success card">
-          <span className="checkout-success-icon" aria-hidden="true">
-            <FiCheck />
-          </span>
-          <h1>Order confirmed</h1>
-          <p className="checkout-success-text">
-            Thanks {order.delivery.name.split(' ')[0]}, your order is on its way. A
-            confirmation has been sent to {order.delivery.email}.
-          </p>
-
-          <dl className="checkout-success-meta">
-            <div>
-              <dt>Order number</dt>
-              <dd>{order.number}</dd>
-            </div>
-            <div>
-              <dt>Arriving by</dt>
-              <dd>{formatDate(order.arrivesOn)}</dd>
-            </div>
-            <div>
-              <dt>Paid with</dt>
-              <dd>{order.cardLast4 ? `${methodLabel} ending ${order.cardLast4}` : methodLabel}</dd>
-            </div>
-            <div>
-              <dt>Total</dt>
-              <dd>{formatPrice(order.total)}</dd>
-            </div>
-          </dl>
-
-          <ul className="checkout-success-items">
-            {order.items.map((item) => (
-              <li key={item.id}>
-                <img src={item.thumbnail} alt={item.title} width="56" height="56" loading="lazy" />
-                <div>
-                  <p className="checkout-success-item-title">{item.title}</p>
-                  <p className="checkout-success-item-meta">
-                    {item.brand} - {pluralize(item.quantity, 'unit')}
-                  </p>
-                </div>
-                <span>{formatPrice(item.price * item.quantity)}</span>
-              </li>
-            ))}
-          </ul>
-
-          <p className="checkout-success-address">
-            Delivering to {order.delivery.address}, {order.delivery.city},{' '}
-            {order.delivery.state} {order.delivery.pincode}
-          </p>
-
-          <div className="checkout-success-actions">
-            <Link className="btn btn-primary" to="/">
-              Continue shopping
-            </Link>
-            <button type="button" className="btn btn-outline" onClick={() => setOrder(null)}>
-              Start a new order
-            </button>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   if (!cartItems.length) {
