@@ -29,6 +29,11 @@ const verdicts = {
   }
 }
 
+/**
+ * Maps prices onto the SVG canvas. The y axis is flipped, because SVG measures from
+ * the top down while a price chart reads from the bottom up, and a flat series would
+ * divide by a zero span so it falls back to 1.
+ */
 function buildPoints(values) {
   const highest = Math.max(...values)
   const lowest = Math.min(...values)

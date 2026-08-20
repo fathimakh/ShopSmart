@@ -16,6 +16,7 @@ function FilterPanel({ categories, brands, filters, onChange, onReset, showCateg
 
   const updatePrice = (key) => (event) => {
     const { value } = event.target
+    // An empty box means no limit, but a negative price is never a valid one.
     if (value === '' || Number(value) >= 0) {
       onChange({ ...filters, [key]: value })
     }
