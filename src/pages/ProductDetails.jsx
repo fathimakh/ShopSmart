@@ -84,7 +84,7 @@ function ProductDetails() {
       <nav className="breadcrumb" aria-label="Breadcrumb">
         <Link to="/">Shop</Link>
         <FiChevronRight aria-hidden="true" />
-        <span>{product.categoryLabel}</span>
+        <Link to={`/category/${product.category}`}>{product.categoryLabel}</Link>
         <FiChevronRight aria-hidden="true" />
         <span aria-current="page">{product.title}</span>
       </nav>
