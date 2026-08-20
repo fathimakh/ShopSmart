@@ -35,6 +35,7 @@ function Home() {
   const [query, setQuery] = useState('')
   const [sortBy, setSortBy] = useState('featured')
   const [aiSearch, setAiSearch] = useState(null)
+  const [interests, setInterests] = useState(null)
   const location = useLocation()
   const navigate = useNavigate()
   const debouncedQuery = useDebounce(query)
@@ -78,14 +79,17 @@ function Home() {
     [products]
   )
 
+  // Recommendations are worked out once per visit. Recalculating them live would pull
+  // a product out of the row the moment it was added to the cart or saved, which reads
+  // as the card vanishing under the shopper's finger.
+  useEffect(() => {
+    if (status !== 'ready') return
+    setInterests({ viewed: recentlyViewed, wishlist, cart: cart.map((item) => item.id) })
+  }, [status])
+
   const recommendations = useMemo(
-    () =>
-      getRecommendations(products, textIndex, {
-        viewed: recentlyViewed,
-        wishlist,
-        cart: cart.map((item) => item.id)
-      }),
-    [products, textIndex, recentlyViewed, wishlist, cart]
+    () => (interests ? getRecommendations(products, textIndex, interests) : []),
+    [products, textIndex, interests]
   )
 
   // The assistant page does the reading. Its answer arrives here through router state
