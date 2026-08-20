@@ -151,9 +151,9 @@ function Home() {
         products={recommendations}
       />
 
-      <div className="home-toolbar">
+      <div className="browse-toolbar">
         <SearchBar value={query} onChange={setQuery} />
-        <label className="home-sort">
+        <label className="browse-sort">
           <span className="visually-hidden">Sort products by</span>
           <select value={sortBy} onChange={(event) => setSortBy(event.target.value)}>
             {sortOptions.map((option) => (
@@ -165,22 +165,22 @@ function Home() {
         </label>
       </div>
 
-      <div className="home-layout">
+      <div className="browse-layout">
         <button
           type="button"
-          className="btn btn-outline home-filter-toggle"
+          className="btn btn-outline browse-filter-toggle"
           aria-expanded={filtersOpen}
           aria-controls="filter-panel"
           onClick={() => setFiltersOpen((open) => !open)}
         >
           <FiSliders aria-hidden="true" />
           Filters
-          {activeFilterCount ? <span className="home-filter-count">{activeFilterCount}</span> : null}
+          {activeFilterCount ? <span className="browse-filter-count">{activeFilterCount}</span> : null}
         </button>
 
         <aside
           id="filter-panel"
-          className={filtersOpen ? 'home-sidebar is-open' : 'home-sidebar'}
+          className={filtersOpen ? 'browse-sidebar is-open' : 'browse-sidebar'}
           aria-label="Product filters"
         >
           <FilterPanel

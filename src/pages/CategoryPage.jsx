@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { FiChevronRight, FiGrid } from 'react-icons/fi'
+import { FiChevronRight, FiGrid, FiSliders } from 'react-icons/fi'
 import { useCatalog } from '../context/CatalogContext'
 import FilterPanel from '../components/FilterPanel/FilterPanel'
 import ProductGrid from '../components/ProductGrid/ProductGrid'
@@ -10,7 +10,14 @@ import CategoryTiles from '../components/CategoryTiles/CategoryTiles'
 import EmptyState from '../components/EmptyState/EmptyState'
 import useDebounce from '../hooks/useDebounce'
 import usePageTitle from '../hooks/usePageTitle'
-import { applyFilters, defaultFilters, searchProducts, sortOptions, sortProducts } from '../utils/filters'
+import {
+  applyFilters,
+  countActiveFilters,
+  defaultFilters,
+  searchProducts,
+  sortOptions,
+  sortProducts
+} from '../utils/filters'
 import { formatPrice, pluralize, titleCase } from '../utils/format'
 import './CategoryPage.css'
 
@@ -20,6 +27,7 @@ function CategoryPage() {
   const [filters, setFilters] = useState(defaultFilters)
   const [sortBy, setSortBy] = useState('featured')
   const [query, setQuery] = useState('')
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const debouncedQuery = useDebounce(query)
 
   const label = titleCase(slug)
@@ -61,6 +69,7 @@ function CategoryPage() {
     setFilters(defaultFilters)
     setSortBy('featured')
     setQuery('')
+    setFiltersOpen(false)
     window.scrollTo({ top: 0 })
   }, [slug])
 
@@ -119,13 +128,13 @@ function CategoryPage() {
         ) : null}
       </header>
 
-      <div className="home-toolbar">
+      <div className="browse-toolbar">
         <SearchBar
           value={query}
           onChange={setQuery}
           placeholder={`Search within ${label}`}
         />
-        <label className="home-sort">
+        <label className="browse-sort">
           <span className="visually-hidden">Sort products by</span>
           <select value={sortBy} onChange={(event) => setSortBy(event.target.value)}>
             {sortOptions
@@ -139,8 +148,26 @@ function CategoryPage() {
         </label>
       </div>
 
-      <div className="home-layout">
-        <aside className="home-sidebar is-open" aria-label="Filters">
+      <div className="browse-layout">
+        <button
+          type="button"
+          className="btn btn-outline browse-filter-toggle"
+          aria-expanded={filtersOpen}
+          aria-controls="category-filters"
+          onClick={() => setFiltersOpen((open) => !open)}
+        >
+          <FiSliders aria-hidden="true" />
+          Filters
+          {countActiveFilters(filters) ? (
+            <span className="browse-filter-count">{countActiveFilters(filters)}</span>
+          ) : null}
+        </button>
+
+        <aside
+          id="category-filters"
+          className={filtersOpen ? 'browse-sidebar is-open' : 'browse-sidebar'}
+          aria-label="Filters"
+        >
           <FilterPanel
             categories={[]}
             showCategories={false}

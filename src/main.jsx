@@ -5,6 +5,7 @@ import { CatalogProvider } from './context/CatalogContext'
 import { ShopProvider } from './context/ShopContext'
 import App from './App'
 import './index.css'
+import './styles/browse.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

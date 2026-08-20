@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import Header from './components/Header/Header'
 import Footer from './components/Footer/Footer'
 import CompareBar from './components/CompareBar/CompareBar'
@@ -17,7 +17,13 @@ const Checkout = lazy(() => import('./pages/Checkout'))
 const CategoryPage = lazy(() => import('./pages/CategoryPage'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
+// Pages that end in a fixed composer read better without the footer below them.
+const pagesWithoutFooter = ['/assistant']
+
 function App() {
+  const { pathname } = useLocation()
+  const showFooter = !pagesWithoutFooter.includes(pathname)
+
   return (
     <div className="app">
       <a className="skip-link" href="#main-content">
@@ -40,7 +46,7 @@ function App() {
         </Suspense>
       </main>
       <CompareBar />
-      <Footer />
+      {showFooter ? <Footer /> : null}
       <BottomNav />
     </div>
   )
